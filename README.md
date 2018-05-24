@@ -6,7 +6,7 @@
 ## What is it?
 
 KUnit provides possibility to write repeatable tests for kerboscript -
-[KOS programming language](https://github.com/KSP-KOS/KOS). It is an
+[KOS programming language](https://github.com/KSP-KOS/KOS). KUnit is an
 instance of the xUnit architecture for unit testing frameworks.
 
 KUnit also demonstrates how to use object-oriented approach in KOS
