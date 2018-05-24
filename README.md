@@ -55,7 +55,7 @@ protected mutator/accessor to provide an access to them for derived classes.
 
 ## What would be nice to get better OOP on top of KOS
 
-* Having three lexocons for those scopes: public, protected and private is most
+* Having three lexicons for those scopes: public, protected and private is most
 significant problem while programming OOP on KOS. It causes lot problems with
 method declaration and definition. There should be an adequate analogue for
 visibility specificators.
