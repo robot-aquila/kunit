@@ -2,9 +2,6 @@
 
 #### Note: This project is not part of [KOS project](https://github.com/KSP-KOS/KOS). Please don't ask to do something with KOS.
 
-
-## What is it?
-
 KUnit provides possibility to write repeatable tests for kerboscript -
 [KOS programming language](https://github.com/KSP-KOS/KOS). KUnit is an
 instance of the xUnit architecture for unit testing frameworks.
@@ -36,12 +33,26 @@ object-oriented programming on KOS.
 In this case you'll never face with problems programming on KOS.
 
 
-## What KOS must have to provide better programming
+## Known issues
 
-* There is only one point. Project crash_cases directory contains description
-of some issues. They are definitely bugs and do not related to object-oriented
-programming or unit testing only. They may appear any time you kerboscript
-works. They must be fixed.
+* The most critical issue is that KOS have a very unpleasant bug which appeared
+often when you coding TDD + OOP. In such case you run your test often and you
+have lot calls on stack. In case if you mistaked in variable name sometimes KOS
+cannot handle stack and that leads to KSP got stuck or chashed. The problem is
+that situation cannot be easily reproduced in automated test. When we try then
+we get an expected KOS behavior. But we will keep trying.
+
+Project crash_cases directory contains description of issues. They are
+definitely bugs and do not related to object-oriented programming or unit
+testing only. They may appear any time you work kerboscript. KUnit developers
+informed KOS maintainers about that case and hope this kind of bugs will be
+fixed soon.
+
+* Don't make protected class attributes. Combination of inheritance and calling
+parent may lead to a mess with references. Making a shallow copy of parent
+protected interface mean you will get two independent copies of attributes if
+they are primitive types. Better to keep all properties private and use
+protected mutator/accessor to provide an access to them for derived classes.
 
 
 ## What would be nice to get better OOP on top of KOS
@@ -52,5 +63,8 @@ method declaration and definition. There should be an adequate analogue for
 visibility specificators.
 
 * TDA (tell, don't ask) principle does not work well without possibility to
-force call stack. Exceptions support would be nice and useful feature.
-
+force call stack. Exceptions support would be nice and useful feature. Also TDA
+means we do not want to negotiate interfaces. We want to tell of interfaces.
+Type checking is very desirable feature in weak typed language. Something like
+PHP type hinting would be great in addition to it to provide strong contract
+declaration.

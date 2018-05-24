@@ -16,6 +16,7 @@ function KUnitResult {
 	   testCaseName is "",
 	   className is list(),
 	   protected is lexicon().
+	className:add("KUnitResult").
 
 	local public is KUnitObject(className, protected).
 	
@@ -26,7 +27,7 @@ function KUnitResult {
 
 	// class methods
 	set public#toString to KUnitResult_toString@:bind(public).
-	set public#equals to KUnitResult_equals@:bind(public, protected).
+	set public#equals to KUnitResult_equals@:bind(public).
 
 	return public.
 }
@@ -39,8 +40,9 @@ function KUnitResult_toString {
 		if public#testCaseName <> "" {
 			set r to r + "#" + public#testCaseName.
 		}
+		set r to r + " ".
 	}
-	set r to r + " " + public#type.	
+	set r to r + public#type.	
 	if public#message <> "" {
 		set r to r + ": " + public#message.
 	}
@@ -48,12 +50,12 @@ function KUnitResult_toString {
 }
 
 function KUnitResult_equals {
-    declare local parameter this, protected, other.
-    if this = other {
+    declare local parameter public, other.
+    if public = other {
         return true.
     }
-    if parent#isOfSameClass(other) {
-        return true.
+    if not public#isSameClassWith(other) {
+        return false.
     }
     if public#type = other#type and
         public#message = other#message and
