@@ -27,6 +27,7 @@ function KUnitObjectTest {
     set public#testIsSameClassWith to KUnitObjectTest_testIsSameClassWith@:bind(public, private).
     set public#testIsA to KUnitObjectTest_testIsA@:bind(public, private).
     set public#testIsClass to KUnitObjectTest_testIsClass@:bind(public, private).
+    set public#testIsClass_StaticCall to KUnitObjectTest_testIsClass_StaticCall@:bind(public, private).
     set public#testToString to KUnitObjectTest_testToString@:bind(public, private).
     set public#testEquals to KUnitObjectTest_testEquals@:bind(public, private).
     
@@ -128,9 +129,31 @@ function KUnitObjectTest_testIsClass {
     
     local object is private#testObject.
     
+    local msg is "Object class shouldn't be identified as BaseClass".
+    if not public#assertFalse(object#isClass("BaseClass"), msg) return.
     
+    local msg is "Object class shouldn't be identified as KUnitObject".
+    if not public#assertFalse(object#isClass("KUnitObject"), msg) return.
     
-    public#fail("Not yet implemented").
+    local msg is "Object class should be identified as TopClass".
+    if not public#assertTrue(object#isClass("TopClass"), msg) return.
+    
+}
+
+function KUnitObjectTest_testIsClass_StaticCall {
+    declare local parameter public, private.
+    
+    local object is private#testObject.
+    
+    local msg is "Object class shouldn't be identified as BaseClass".
+    if not public#assertFalse(KUnitObject_isClass(object, "BaseClass"), msg) return.
+    
+    local msg is "Object class shouldn't be identified as KUnitObject".
+    if not public#assertFalse(KUnitObject_isClass(object, "KUnitObject"), msg) return.
+    
+    local msg is "Object class should be identified as TopClass".
+    if not public#assertTrue(KUnitObject_isClass(object, "TopClass"), msg) return.
+    
 }
 
 function KUnitObjectTest_testToString {
