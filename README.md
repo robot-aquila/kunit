@@ -64,5 +64,4 @@ visibility specificators.
 force call stack. Exceptions support would be nice and useful feature. Also TDA
 means we do not want to negotiate interfaces. We want to tell of interfaces.
 Type checking is very desirable feature in weak typed language. Something like
-PHP type hinting would be great in addition to it to provide strong contract
-declaration.
+PHP type hinting would be great addition to provide strong contract declaration.
