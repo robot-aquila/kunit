@@ -31,7 +31,8 @@ That is official KOS feature with low risk to disapper.
 supported by KOS. In this case you'll never face with problems around
 object-oriented programming on KOS.
 
-* Zero level - you can use any other language to write your programs for KSP.
+* Zero level - you can use any other language to write your programs for
+[KSP](https://www.kerbalspaceprogram.com/en/).
 In this case you'll never face with problems programming on KOS.
 
 
