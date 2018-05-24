@@ -38,19 +38,17 @@ In this case you'll never face with problems programming on KOS.
 * The most critical issue is that KOS have a very unpleasant bug which appeared
 often when you coding TDD + OOP. In such case you run your test often and you
 have lot calls on stack. In case if you mistaked in variable name sometimes KOS
-cannot handle stack and that leads to KSP got stuck or chashed. The problem is
-that situation cannot be easily reproduced in automated test. When we try then
-we get an expected KOS behavior. But we will keep trying.
-
-Project crash_cases directory contains description of issues. They are
-definitely bugs and do not related to object-oriented programming or unit
-testing only. They may appear any time you work kerboscript. KUnit developers
-informed KOS maintainers about that case and hope this kind of bugs will be
-fixed soon.
+cannot handle stack and that leads to KSP chash. The problem is that situation
+cannot be easily reproduced in automated test. When we try then we get an
+expected KOS behavior. But we will keep trying. Project crash_cases directory
+contains description of issues. They are definitely bugs and do not related to
+object-oriented programming or unit testing only. They may appear any time you
+work kerboscript. KUnit developers informed KOS maintainers about that case and
+hope this kind of bugs will be fixed soon.
 
 * Don't make protected class attributes. Combination of inheritance and calling
 parent may lead to a mess with references. Making a shallow copy of parent
-protected interface mean you will get two independent copies of attributes if
+protected interface means you will get two independent copies of attributes if
 they are primitive types. Better to keep all properties private and use
 protected mutator/accessor to provide an access to them for derived classes.
 
