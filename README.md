@@ -17,7 +17,7 @@ exceptional software quality.
 ## Professor Kobert informs you of possible risks
 
 * Higher level - you can use object#member calling signature in your programs
-but keep in mind that supporting such approach may be terminated by kOS
+but keep in mind that availability of such approach may be terminated by kOS
 maintainers. In case if it is terminated you will be forced to rewrite all your
 classes for official supported syntax with object["member"] calling signature. 
 Possible, KUnit maintainers will provide a tool for automatical refactoring
