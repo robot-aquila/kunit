@@ -46,3 +46,14 @@
 //    return false.
 //}
 //
+// Example3:
+//
+// method declaration:
+// 
+//      set public#equals to KUnitObject_equals@:bind(public).
+//
+// method definition:
+//
+//function KUnitObject_equals {
+//    declare local parameter public, protected, private, other.
+//

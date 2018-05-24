@@ -16,12 +16,9 @@ function KUnitObject {
     set public#getRefID to KUnitObject_getRefID@:bind(private).
     set public#isSameClassWith to KUnitObject_isSameClassWith@:bind(public, protected, private).
     set public#isA to KUnitObject_isA@:bind(public, protected, private).
-    
+    set public#isClass to KUnitObject_isClass@:bind(public).
     set public#toString to KUnitObject_toString@:bind(public).
-    set public#equals to KUnitObject_equals@:bind(public, protected, private).
-    
-    
-    //set public#isA to KUnitObject
+    set public#equals to KUnitObject_equals@:bind(public).
     
     return public.
 }
@@ -41,32 +38,6 @@ function KUnitObject_getRefID {
     return private#refID.
 }
 
-
-function KUnitObject_toString {
-    declare local parameter public.
-    return public#getClassName() + "@" + public#getRefID().
-}
-
-
-// Public.
-// Test that argument is equal to this object.
-// Param1: value to test. You safely can pass any values - verification for
-//         belonging to the class will be performed.
-// Return: true if objects are equal. 
-function KUnitObject_equals {
-    declare local parameter public, protected, private, other.
-    if other = public {
-        return true.
-    }
-    if not public#isSameClassWith(other) {
-        return false.
-    }
-    if other#getRefID() = public#getRefID() {
-        return true.
-    } else {
-        return false.
-    }
-}
 
 // Public.
 // Test that the argument is object of same class as this.
@@ -90,23 +61,49 @@ function KUnitObject_isSameClassWith {
 function KUnitObject_isA {
     declare local parameter public, protected, private,
         className.
-    local classList is private#className.
-    
-    return false. // TODO:
+    for x in private#className {
+        if x = className {
+            return true.
+        }
+    }    
+    return false.
 }
 
-// Protected methods.
+
+function KUnitObject_toString {
+    declare local parameter public.
+    return public#getClassName() + "@" + public#getRefID().
+}
 
 
+// Public.
+// Test that argument is equal to this object.
+// Return: true if objects are equal. 
+function KUnitObject_equals {
+    declare local parameter public,
+        other.          // Value to test. It must be at least
+                        // lexicon or runtime error will occur.
+    if other = public {
+        return true.
+    }
+    if not public#isSameClassWith(other) {
+        return false.
+    }
+    if other#getRefID() = public#getRefID() {
+        return true.
+    } else {
+        return false.
+    }
+}
 
-// Static members.
 
 // Static.
 // Test that the argument is object.
-// Param1: value to test. It must be at least lexicon or runtime error will occur.
 // Return: true if value is object of KUnitObject subclass
 function KUnitObject_isObject {
-    declare local parameter object.
+    declare local parameter
+        object.         // Value to test. It must be at least
+                        // lexicon or runtime error will occur.
     if object:haskey("getClassName") and object:haskey("getRefID") {
         return true.
     }
@@ -114,13 +111,14 @@ function KUnitObject_isObject {
 }
 
 
-// Static.
+// Static or public.
 // Test that the argument is an object of specified class.
-// Param1: value to test. It must be at least lexicon or runtime error will occur.
-// Param2: name of class that object should belong
 // Return: true if value is object and belongs to the specified class
-function KUnitObject_isOfClass {
-    declare local parameter object, className.
+function KUnitObject_isClass {
+    declare local parameter
+        object,         // Value to test. It must be at least lexicon
+                        // or runtime error will occur.
+        className.      // Name of class that object should belong
     if not KUnitObject_isObject(object) {
         return false.
     }
@@ -129,7 +127,6 @@ function KUnitObject_isOfClass {
     }
     return false.
 }
-
 
 global KUnitObject_g67asdjqjvwdhvasd89jnbavsdvvtyvasdjebzebkebdoamnjnsdhhb is 0.
 
