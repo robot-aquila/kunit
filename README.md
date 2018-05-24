@@ -44,7 +44,7 @@ programming or unit testing only. They may appear any time you kerboscript
 works. They must be fixed.
 
 
-## What would be nice to provide to get better OOP on top of KOS
+## What would be nice to get better OOP on top of KOS
 
 * Having three lexocons for those scopes: public, protected and private is most
 significant problem while programming OOP on KOS. It causes lot problems with
