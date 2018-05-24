@@ -1,11 +1,9 @@
-# kunit
-###Unit Testing framework for kerboscript
+# KUnit - Unit Testing framework for kerboscript
 
-#Note: This project is not a part of KOS project.
-Please don't ask to do something with KOS.
+#### Note: This project is not part of [KOS project](https://github.com/KSP-KOS/KOS). Please don't ask to do something with KOS.
 
 
-##What is it?
+## What is it?
 
 KUnit provides possibility to write repeatable tests for kerboscript -
 [KOS programming language](https://github.com/KSP-KOS/KOS). It is an
@@ -16,7 +14,7 @@ programs to achieve well-looking design, maximum code reusability and
 exceptional software quality.
 
 
-##Professor Kobert informs you of possible risks:
+## Professor Kobert informs you of possible risks
 
 * Higher level - you can use object#member calling signature in your programs
 but keep in mind that supporting such approach may be terminated by kOS
@@ -37,7 +35,7 @@ object-oriented programming on KOS.
 In this case you'll never face with problems programming on KOS.
 
 
-##What KOS must have to provide better programming:
+## What KOS must have to provide better programming
 
 * There is only one point. Project crash_cases directory contains description
 of some issues. They are definitely bugs and do not related to object-oriented
@@ -45,7 +43,7 @@ programming or unit testing only. They may appear any time you kerboscript
 works. They must be fixed.
 
 
-##What KOS needs to provide better OOP on top of KOS:
+## What would be nice to provide to get better OOP on top of KOS
 
 * Having three lexocons for those scopes: public, protected and private is most
 significant problem while programming OOP on KOS. It causes lot problems with
