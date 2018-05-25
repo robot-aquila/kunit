@@ -8,10 +8,11 @@ runoncepath("kunit/class/KUnitResultBuilder").
 function KUnitTest {
 	declare local parameter
         testName,           // Name of test.
-        reporter,           // Instance of test result reporter. Reporter will
-                            // receive all results including self-test failures
-                            // of unit test. Reporter must be a sub class of
-                            // KUnitReporter class.
+        reporter is KUnitReporter(),// Instance of test result reporter.
+                                    // Reporter will receive all results
+                                    // including self-test failures  of unit
+                                    // test. Reporter must be a sub class of
+                                    // KUnitReporter class.
         className is list(),
         protected is lexicon().
     className:add("KUnitTest").

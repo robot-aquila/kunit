@@ -81,6 +81,7 @@ function KUnitReporter_notifyOfAssertionResult {
 	local countCurrentTest is private#countCurrentTest.
 	local countCurrentTestCase is private#countCurrentTestCase.
 	local countAssertion is private#countAssertion.
+    local assertionNumber is countCurrentTestCase#getTotalCount().
 	
 	if result#type = "success" {
 	   countCurrentTest#addSuccess().
@@ -91,7 +92,7 @@ function KUnitReporter_notifyOfAssertionResult {
        countCurrentTestCase#addFailure().
        countAssertion#addFailure().	
 	}
-	private#printResultCombinedType("assertion", result).
+	private#printResultCombinedType("assertion[" + assertionNumber + "]", result).
 }
 
 function KUnitReporter_notifyOfTestCaseEnd {
@@ -104,6 +105,7 @@ function KUnitReporter_notifyOfTestCaseEnd {
 	} else {
 	    countTestCase#addSuccess().
 	}
+	set private#countCurrentTestCase to KUnitCounter().
 	private#printResultCombinedType("test_case_end", result).
 }
 

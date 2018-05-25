@@ -121,7 +121,7 @@ function KUnitReporterTest_testNotifyOfAssertionResult {
     
     object#notifyOfAssertionResult(res).
     
-    if not public#assertEquals("TestName#testCase assertion->success", captured) return.
+    if not public#assertEquals("TestName#testCase assertion[0]->success", captured) return.
 }
 
 function KUnitReporterTest_testNotifyOfTestCaseEnd {

@@ -1,5 +1,6 @@
 @lazyglobal off.
 
+// Status: investigate
 // Not yet done.
 // Still unable to reproduce test case automatically.
 
@@ -56,4 +57,24 @@
 //
 //function KUnitObject_equals {
 //    declare local parameter public, protected, private, other.
+//
+//
+// Example4: inside a test case
+//
+//  local expectedObject is KUnitObject().
+//  local actualObject is KUnitObject().
+//  local r is public#assertObjectEquals(expectedObject, acualObject, "Test message").
+//                                                       ^^^^^ causes crash
+//
+// Example 5:
+//
+//  local actualObject is expectedObject.
+//  local r is object#assertObjectEquals(expectedObject, actualbject, "Test message").
+//                                                       ^^^ same here
+//
+// Example 6 (possible related to test_case3):
+//
+//     local msg is "Test message. Failed: expected: <[" +
+//        expectedObject#toString() + "]> but was <[" + actualObject#toString + "]>".
+//                                                                          ^^^
 //
