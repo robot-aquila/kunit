@@ -35,7 +35,9 @@ In this case you'll never face with problems programming on KOS.
 
 ## Known issues
 
-* The most critical issue is that KOS have a very unpleasant bug which appeared
+### KOS bugs
+
+The most critical issue is that KOS have a very unpleasant bug which appeared
 often when you coding TDD + OOP. In such case you run your test often and you
 have lot calls on stack. In case if you mistaked in variable name sometimes KOS
 cannot handle stack and that leads to KSP chash. The problem is that situation
@@ -46,12 +48,24 @@ object-oriented programming or unit testing only. They may appear any time you
 work kerboscript. KUnit developers informed KOS maintainers about that case and
 hope this kind of bugs will be fixed soon.
 
-* Don't make protected class attributes. Combination of inheritance and calling
-parent may lead to a mess with references. Making a shallow copy of parent
-protected interface means you will get two independent copies of attributes if
-they are primitive types. Better to keep all properties private and use
-protected mutator/accessor to provide an access to them for derived classes.
+### Don't make protected class attributes
 
+Combination of inheritance and calling parent may lead to a mess with
+references. Making a shallow copy of parent protected interface means you will
+get two independent copies of attributes if they are primitive types. Better to
+keep all properties private and use protected mutator/accessor to provide an
+access to them for derived classes.
+
+### Where object#mamber does not work
+
+In some cases referencing with # does not work
+```
+print "PRINT ME: " + ("" + private#numTests). 
+```
+Use official syntax instead of code above
+```
+print "PRINT ME: " + ("" + private["numTests"]).
+```
 
 ## What would be nice to get better OOP on top of KOS
 

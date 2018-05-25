@@ -58,6 +58,7 @@ function KUnitTest {
 	set public#assertFalse to KUnitTest_assertFalse@:bind(public, private).
 	set public#assertEquals to KUnitTest_assertEquals@:bind(public, private).
 	set public#assertListEquals to KUnitTest_assertListEquals@:bind(public, private).
+	set public#assertObjectEquals to KUnitTest_assertObjectEquals@:bind(public, private).
 	
 	// Private methods:
 	set private#reportError to KUnitTest_reportError@:bind(public, private).
@@ -264,6 +265,24 @@ function KUnitTest_assertListEquals {
                 set break to true.
             }
         }
+    }
+    reporter#notifyOfAssertionResult(result).
+    return ret.
+}
+
+function KUnitTest_assertObjectEquals {
+    declare local parameter public, private,
+        expectedObject,
+        actualObject,
+        msg is "Object equality expectation".
+    local reporter is private#reporter.
+    local builder is private#resultBuilder.
+    local result is builder#buildSuccess().
+    local ret is true.
+    if not actualObject#equals(expectedObject) {
+        set ret to false.
+        set result to builder#buildExpectationFailure(msg,
+            "Failed", expectedObject#toString(), actualObject#toString()).
     }
     reporter#notifyOfAssertionResult(result).
     return ret.

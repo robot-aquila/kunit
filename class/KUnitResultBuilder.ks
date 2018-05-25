@@ -9,6 +9,7 @@ function KUnitResultBuilder {
         testCaseName is "",
         className is list(),
         protected is lexicon().
+    className:add("KUnitResultBuilder").
 
     local public is KUnitObject(className, protected).
     local private is lexicon().
