@@ -6,9 +6,9 @@ runoncepath("kunit/class/KUnitReporter").
 
 function KUnitCounterTest {
     declare local parameter
-       reporter is KUnitReporter(),
-       className is list(),
-       protected is lexicon().
+        reporter is KUnitReporter(),
+        className is list(),
+        protected is lexicon().
     className:add("KUnitCounterTest").
        
     local public is KUnitTest("KUnitCounterTest", reporter, className, protected).

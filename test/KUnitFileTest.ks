@@ -24,7 +24,7 @@ function KUnitFileTest {
     set public#testIsExists to KUnitFileTest_testIsExists@:bind(public, private).
     set public#testIsDir to KUnitFileTest_testIsDir@:bind(public, private).
     set public#testIsFile to KUnitFileTest_testIsFile@:bind(public, private).
-    
+    set public#testGetVolumeKOS to KUnitFileTest_testGetVolumeKOS@:bind(public, private).
     set public#testToString to KUnitFileTest_testToString@:bind(public, private).
     set public#testEquals to KUnitFileTest_testEquals@:bind(public, private).
     
@@ -50,7 +50,7 @@ function KUnitFileTest_testCtor {
     declare local parameter public, private.
     
     local object is KUnitFile(path("kunit/test/fixture/file0_1.txt")).
-    
+
     local expected is path("kunit/test/fixture/file0_1.txt").
     local actual is object#getPath().
     if not public#assertEquals(expected, actual) return.
@@ -123,6 +123,15 @@ function KUnitFileTest_testIsFile {
     local actual is object#isFile().
     local msg is "Non-existent path shouldn't be identified as file".
     if not public#assertFalse(actual, msg) return.
+}
+
+function KUnitFileTest_testGetVolumeKOS {
+    declare local parameter public, private.
+    
+    local object is KUnitFile(path("kunit/test/fixture/subdir1")).
+    local expected is volume().
+    local actual is object#getVolumeKOS().
+    if not public#assertEquals(expected, actual, "Unexpected volume") return.
 }
 
 function KUnitFileTest_testToString {

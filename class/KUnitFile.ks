@@ -27,6 +27,7 @@ function KUnitFile {
     set public#isExists to KUnitFile_isExists@:bind(public, protected, private).
     set public#isDir to KUnitFile_isDir@:bind(public, protected, private).
     set public#isFile to KUnitFile_isFile@:bind(public, protected, private).
+    set public#getVolumeKOS to KUnitFile_getVolumeKOS@:bind(public, protected, private).
     set public#toString to KUnitFile_toString@:bind(public, protected, private).
     set public#equals to KUnitFile_equals@:bind(public, protected, private).
 
@@ -96,6 +97,12 @@ function KUnitFile_isFile {
         return false.
     }
     return true.
+}
+
+function KUnitFile_getVolumeKOS {
+    declare local parameter public, protected, private.
+    local kp is private#kosPath.
+    return kp:volume.
 }
 
 function KUnitFile_toString {

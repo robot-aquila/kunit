@@ -60,6 +60,7 @@ function KUnitTest {
 	set public#assertEquals to KUnitTest_assertEquals@:bind(public, private).
 	set public#assertListEquals to KUnitTest_assertListEquals@:bind(public, private).
 	set public#assertObjectEquals to KUnitTest_assertObjectEquals@:bind(public, private).
+	set public#assertObjectListEquals to KUnitTest_assertObjectListEquals@:bind(public, private).
 	
 	// Private methods:
 	set private#reportError to KUnitTest_reportError@:bind(public, private).
@@ -169,7 +170,12 @@ function KUnitTest_run {
     set private#isRunning to true.    
     for testCaseName in private#testCasesList {
         resultBuilder#setTestCaseName(testCaseName).
-        if not protected#setUp() {
+        if includeNamePattern:length > 0 and
+            not testCaseName:matchespattern(includeNamePattern)
+        {
+            // skip this test case
+        
+        } else if not protected#setUp() {
             private#reportError("Test case setup failed").
             protected#tearDown().
         } else {
@@ -284,6 +290,44 @@ function KUnitTest_assertObjectEquals {
         set ret to false.
         set result to builder#buildExpectationFailure(msg,
             "Failed", expectedObject#toString(), actualObject#toString()).
+    }
+    reporter#notifyOfAssertionResult(result).
+    return ret.
+}
+
+function KUnitTest_assertObjectListEquals {
+    declare local parameter public, private,
+        expectedList,
+        actualList,
+        msg is "Object list equality expectation".
+    local reporter is private#reporter.
+    local builder is private#resultBuilder.
+    local result is builder#buildSuccess().
+    local ret is true.
+    if actualList = expectedList {
+        set ret to true.
+    } else if actualList:length <> expectedList:length {
+        set result to builder#buildExpectationFailure(msg,
+            "Number of elements", expectedList:length, actualList:length).
+        set ret to false.
+    } else {
+        local break is false.
+        from { local i is 0. }
+            until i >= expectedList:length or break = true
+            step { set i to i + 1. }
+            do
+        {
+            local actualObject is actualList[i].
+            local expectedObject is expectedList[i].
+            if not actualObject#equals(expectedObject) {
+                set result to builder#buildExpectationFailure(msg,
+                    "element #" + i + " mismatch",
+                    expectedObject#toString(),
+                    actualObject#toString()).
+                set ret to false.
+                set break to true.
+            }
+        }
     }
     reporter#notifyOfAssertionResult(result).
     return ret.

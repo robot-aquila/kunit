@@ -5,6 +5,8 @@
 // Still unable to reproduce test case automatically.
 
 // The Case: Calling object member on wrong variable causes KSP crash.
+// Looks like all related to closure scopes, binding or something like that
+//
 // Example1:
 //
 //function KUnitObject_equals {
@@ -72,9 +74,22 @@
 //  local r is object#assertObjectEquals(expectedObject, actualbject, "Test message").
 //                                                       ^^^ same here
 //
-// Example 6 (possible related to test_case3):
+// Example 6: (possible related to test_case3):
 //
 //     local msg is "Test message. Failed: expected: <[" +
 //        expectedObject#toString() + "]> but was <[" + actualObject#toString + "]>".
 //                                                                          ^^^
+// Example 7:
+//
+//    } else if actualList:lenth <> expectedList:length {
+//        set result to builder#buildExpectationFailure(msg,
+//            "Number of elements", expected:length, actual:length).
+//                                  ^^^^ must be expectedList, causes crash
+//        set ret to false.
+//    }
+//
+// Example 8:
+//
+// } else if actualList:lenth <> expectedList:length {
+//                      ^^^^^ causes chash
 //

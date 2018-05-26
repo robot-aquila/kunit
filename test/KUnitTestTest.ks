@@ -4,6 +4,7 @@ runoncepath("kunit/class/KUnitPrinter").
 runoncepath("kunit/class/KUnitTest").
 runoncepath("kunit/class/KUnitReporter").
 runoncepath("kunit/class/KUnitResult").
+runoncepath("kunit/class/KUnitResultBuilder").
 
 function KUnitTestTest {
     declare local parameter
@@ -16,6 +17,7 @@ function KUnitTestTest {
 	local private is lexicon().
 	local parentProtected is protected:copy().
 	
+	set private#resultBuilder to KUnitResultBuilder().
 	set private#printerMock to -1.
 	set private#reporterMock to -1.
 	set private#testObject to -1.
@@ -31,6 +33,7 @@ function KUnitTestTest {
     set public#testAddCasesByNamePattern to KUnitTesttest_testAddCasesByNamePattern@:bind(public, private).
     set public#testClose to KUnitTestTest_testClose@:bind(public, private).
     set public#testRun to KUnitTestTest_testRun@:bind(public, private).
+    set public#testRun_FilterByNamePattern to KUnitTestTest_testRun_FilterByNamePattern@:bind(public, private).
     set public#testRun_ShouldSkipAllTestCases_IfSetUpTestFailed to KUnitTestTest_testRun_ShouldSkipAllTestCases_IfSetUpTestFailed@:bind(public, private).
     set public#testRun_ShouldSkipTestCase_IfSetUpFailed to KUnitTestTest_testRun_ShouldSkipTestCase_IfSetUpFailed@:bind(public, private).
     set public#testRun_TestOfNotificationSequence to KUnitTestTest_testRun_TestOfNotificationSequence@:bind(public, private).
@@ -40,7 +43,9 @@ function KUnitTestTest {
     set public#testAssertFalse to KUnitTestTest_testAssertFalse@:bind(public, private).
     set public#testAssetEquals to KUnitTestTest_testAssertEquals@:bind(public, private).
     set public#testAssetListEquals to KUnitTestTest_testAssertListEquals@:bind(public, private).
-    set public#testAssetObjectEquals to KUnitTestTest_testAssertObjectEquals@:bind(public, private).
+    set public#testAssertObjectEquals to KUnitTestTest_testAssertObjectEquals@:bind(public, private).
+    set public#testAssertObjectListEquals to KUnitTestTest_testAssertObjectListEquals@:bind(public, private).
+    set public#testAssertObjectListEquals_DefaultMsg to KUnitTestTest_testAssertObjectListEquals_DefaultMsg@:bind(public, private).
     public#addCasesByNamePattern("^test").
     
 	return public.
@@ -214,6 +219,30 @@ function KUnitTestTest_testRun {
 	expected:add("tearDown").
 	expected:add("tearDownTest").
 	if not public#assertListEquals(expected, actual, "Unexpected call sequence") return.
+}
+
+function KUnitTestTest_testRun_FilterByNamePattern {
+    declare local parameter public, private.
+
+    // Given
+    local className is list("MyTest").
+    local protected is lexicon().
+    local service is KUnitTest("MyTest", private#reporterMock, className, protected).
+    local actual is list().
+    service#shuffleTestCases(false).
+    set service#testCase1 to { actual:add("case1"). }.
+    set service#testCase2 to { actual:add("case2"). }.
+    set service#testCase3 to { actual:add("case3"). }.
+    set service#testCase4 to { actual:add("case4"). }.
+    service#addCase("includeCase1", service#testCase1).
+    service#addCase("excludeCase2", service#testCase2).
+    service#addCase("includeCase3", service#testCase3).
+    service#addCase("excludeCase4", service#testCase4).
+
+    service#run("^include").
+    
+    local expected is list("case1", "case3").
+    if not public#assertListEquals(expected, actual, "Unexpected call sequence") return.
 }
 
 function KUnitTestTest_testRun_ShouldSkipAllTestCases_IfSetUpTestFailed {
@@ -614,3 +643,114 @@ function KUnitTestTest_testAssertObjectEquals {
     local expected is KUnitResult("success").
     if not public#assertObjectEquals(expected, capture) return.
 }
+
+function KUnitTestTest_testAssertObjectListEquals {
+    declare local parameter public, private.
+    
+    local capture is -1.
+    local reporterMock is private#reporterMock.
+    set reporterMock#notifyOfAssertionResult to {
+        declare local parameter x.
+        set capture to x.
+    }.
+    local object is private#testObject.
+    local builder is private#resultBuilder.
+    
+    // KUnitResult itself is a good candidate to test object list comparison.
+    // We will use its instance to test object list equality assert.
+    // We will not fill it in all possible combinations of attributes
+    // to keep the test is easy to understand. Because we know that KUnitResult
+    // is well tested and works properly.  
+
+    local expectedList is list().
+    expectedList:add(KUnitResult("foo")).
+    expectedList:add(KUnitResult("bar")).
+    
+    local actualList is list().
+    actualList:add(KUnitResult("foo")).
+
+    local r is object#assertObjectListEquals(expectedList, expectedList, "Test msg").
+    local msg is "Object list instance should be equal to itself".
+    if not public#assertTrue(r, msg) return.
+    
+    local expected is builder#buildSuccess().
+    if not public#assertObjectEquals(expected, capture) return.
+    
+    local r is object#assertObjectListEquals(expectedList, actualList, "Test msg").
+    local msg is "Object lists with different number of elements shouldn't be equal".
+    if not public#assertFalse(r, msg) return.
+    
+    local msg is "Test msg. Number of elements: expected: <[2]> but was <[1]>".
+    local expected is builder#buildFailure(msg).
+    if not public#assertObjectEquals(expected, capture) return.
+
+    actualList:add(KUnitResult("buz")).
+    local r is object#assertObjectListEquals(expectedList, actualList, "Test msg").
+    local msg is "Object lists which contains different objects should not be equal".
+    if not public#assertFalse(r, msg) return.
+    
+    local msg is "Test msg. element #1 mismatch: expected: <[bar]> but was <[buz]>".
+    local expected is builder#buildFailure(msg).
+    if not public#assertObjectEquals(expected, capture) return.
+
+    set actualList[1] to KUnitResult("bar").
+    local r is object#assertObjectListEquals(expectedList, actualList, "Test msg").
+    local msg is "Object lists with similar elements should be equal".
+    if not public#assertTrue(r, msg) return.
+    
+    local expected is builder#buildSuccess().
+    if not public#assertObjectEquals(expected, capture) return.
+}
+
+function KUnitTestTest_testAssertObjectListEquals_DefaultMsg {
+    declare local parameter public, private.
+    
+    local capture is -1.
+    local reporterMock is private#reporterMock.
+    set reporterMock#notifyOfAssertionResult to {
+        declare local parameter x.
+        set capture to x.
+    }.
+    local object is private#testObject.
+    local builder is private#resultBuilder.
+
+    local expectedList is list().
+    expectedList:add(KUnitResult("foo")).
+    expectedList:add(KUnitResult("bar")).
+    
+    local actualList is list().
+    actualList:add(KUnitResult("foo")).
+
+    local r is object#assertObjectListEquals(expectedList, expectedList).
+    local msg is "Object list instance should be equal to itself".
+    if not public#assertTrue(r, msg) return.
+    
+    local expected is builder#buildSuccess().
+    if not public#assertObjectEquals(expected, capture) return.
+    
+    local r is object#assertObjectListEquals(expectedList, actualList).
+    local msg is "Object lists with different number of elements shouldn't be equal".
+    if not public#assertFalse(r, msg) return.
+    
+    local msg is "Object list equality expectation. Number of elements: expected: <[2]> but was <[1]>".
+    local expected is builder#buildFailure(msg).
+    if not public#assertObjectEquals(expected, capture) return.
+
+    actualList:add(KUnitResult("buz")).
+    local r is object#assertObjectListEquals(expectedList, actualList).
+    local msg is "Object lists which contains different objects should not be equal".
+    if not public#assertFalse(r, msg) return.
+    
+    local msg is "Object list equality expectation. element #1 mismatch: expected: <[bar]> but was <[buz]>".
+    local expected is builder#buildFailure(msg).
+    if not public#assertObjectEquals(expected, capture) return.
+
+    set actualList[1] to KUnitResult("bar").
+    local r is object#assertObjectListEquals(expectedList, actualList).
+    local msg is "Object lists with similar elements should be equal".
+    if not public#assertTrue(r, msg) return.
+    
+    local expected is builder#buildSuccess().
+    if not public#assertObjectEquals(expected, capture) return.
+}
+
