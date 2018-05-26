@@ -1,7 +1,8 @@
 // Class to gather and process test results.
 
+runoncepath("kunit/class/KUnit").
 runoncepath("kunit/class/KUnitPrinter").
-runoncepath("kunit/class/KUnitResult").
+runoncepath("kunit/class/KUnitEvent").
 runoncepath("kunit/class/KUnitCounter").
 
 // Constructor.
@@ -125,7 +126,7 @@ function KUnitReporter_notifyOfTestEnd {
 function KUnitReporter_notifyOfError {
 	declare local parameter public, private, result.
 	set private#numErrors to private#numErrors + 1.
-	local nres is KUnitResult("ERROR", result#message, result#testName, result#testCaseName).
+	local nres is KUnitEvent("ERROR", result#message, result#testName, result#testCaseName).
 	private#printResult(nres).
 }
 
@@ -174,13 +175,14 @@ function KUnitReporter_printReportSummary {
     
     local tc is ff(numErrors).
     printer#print("         errors: "+tc+"                   ").
-    printer#print("========================== KUnit v0.0.1 ==").
+    local vers is KUnit_getVersionString().
+    printer#print("========================== " + vers + " ==").
 }
 
 // Private.
 function KUnitReporter_printResultCombinedType {
 	declare local parameter public, private, typeExtension, result.
 	local ntype is typeExtension + "->" + result#type.
-	local nres is KUnitResult(ntype, result#message, result#testName, result#testCaseName).
+	local nres is KUnitEvent(ntype, result#message, result#testName, result#testCaseName).
 	private#printResult(nres).
 }

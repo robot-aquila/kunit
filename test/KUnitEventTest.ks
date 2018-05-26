@@ -1,44 +1,44 @@
-// Unit test of KUnitResult class
+// Unit test of KUnitEvent class
 
-runoncepath("kunit/class/KUnitResult").
+runoncepath("kunit/class/KUnitEvent").
 runoncepath("kunit/class/KUnitTest").
 runoncepath("kunit/class/KUnitReporter").
 
-function KUnitResultTest {
+function KUnitEventTest {
     declare local parameter
         reporter is KUnitReporter(),
         className is list(),
         protected is lexicon().
-    className:add("KUnitResultTest").
+    className:add("KUnitEventTest").
        
-    local public is KUnitTest("KUnitResultTest", reporter, className, protected).
+    local public is KUnitTest("KUnitEventTest", reporter, className, protected).
     local private is lexicon().
     local parentProtected is protected:copy().
     
     set private#testObject to -1.
     
-    set protected#setUp to KUnitResultTest_setUp@:bind(private, parentProtected).
-    set protected#tearDown to KUnitResultTest_tearDown@:bind(private, parentProtected).
+    set protected#setUp to KUnitEventTest_setUp@:bind(private, parentProtected).
+    set protected#tearDown to KUnitEventTest_tearDown@:bind(private, parentProtected).
     
-    set public#testCtor to KUnitResultTest_testCtor@:bind(public, private).
-    set public#testToString to KUnitResultTest_testToString@:bind(public, private).
-    set public#testEquals to KUnitResultTest_testEquals@:bind(public, private).
+    set public#testCtor to KUnitEventTest_testCtor@:bind(public, private).
+    set public#testToString to KUnitEventTest_testToString@:bind(public, private).
+    set public#testEquals to KUnitEventTest_testEquals@:bind(public, private).
     
     public#addCasesByNamePattern("^test").
     
     return public.
 }
 
-function KUnitResultTest_setUp {
+function KUnitEventTest_setUp {
     declare local parameter private, parentProtected.
     if not parentProtected#setUp() { return false. }
 
-    set private#testObject to KUnitResult("failure", "test msg", "FooTest", "testCase1").
+    set private#testObject to KUnitEvent("failure", "test msg", "FooTest", "testCase1").
     
     return true.
 }
 
-function KUnitResultTest_tearDown {
+function KUnitEventTest_tearDown {
     declare local parameter private, parentProtected.
     
     private#testObject:clear().
@@ -47,19 +47,19 @@ function KUnitResultTest_tearDown {
     parentProtected#tearDown().
 }
 
-function KUnitResultTest_testCtor {
+function KUnitEventTest_testCtor {
     declare local parameter public, private.
     
     local object is private#testObject.
 
-    if not public#assertEquals("KUnitResult", object#getClassName()) return.
+    if not public#assertEquals("KUnitEvent", object#getClassName()) return.
     if not public#assertEquals("failure", object#type) return.
     if not public#assertEquals("test msg", object#message) return.
     if not public#assertEquals("FooTest", object#testName) return.
     if not public#assertEquals("testCase1", object#testCaseName) return.
 }
 
-function KUnitResultTest_testToString {
+function KUnitEventTest_testToString {
     declare local parameter public, private.
 
     local object is private#testObject.
@@ -80,7 +80,7 @@ function KUnitResultTest_testToString {
     if not public#assertEquals(expected, object#toString()) return.
 }
 
-function KUnitResultTest_testEquals {
+function KUnitEventTest_testEquals {
     declare local parameter public, private.
     
     local object is private#testObject.
@@ -88,7 +88,7 @@ function KUnitResultTest_testEquals {
     local msg is "Object must be equals to itself".
     if not public#assertTrue(object#equals(object), msg) return.
     
-    local other is KUnitResult("failure", "test msg", "FooTest", "testCase1").
+    local other is KUnitEvent("failure", "test msg", "FooTest", "testCase1").
     local msg is "Objects must be equal if all attributes are equal".
     if not public#assertTrue(object#equals(other), msg) return.
     

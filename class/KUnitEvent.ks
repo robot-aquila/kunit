@@ -1,22 +1,18 @@
-// Class to represent test result
+// Class to represent test event
 
 runoncepath("kunit/class/KUnitObject").
 
 // Constructor.
-// Param1: string identifier of the result type (for example "fail", "ok", etc...)
-// Param2: text message to describe the result (optional, default is "")
-// Param3: test name (optional, default "")
-// Param4: test case name (optional, default "")
-// Return: result class instance
-function KUnitResult {
+function KUnitEvent {
 	declare local parameter
-	   type,
-	   msg is "",
-	   testName is "",
-	   testCaseName is "",
+	   type,               // String identifier of the event type (for example
+	                       // "fail", "ok", etc...)
+	   msg is "",          // Text message to describe the event (optional)
+	   testName is "",     // Test name (optional) 
+	   testCaseName is "", // Test case name (optional) 
 	   className is list(),
 	   protected is lexicon().
-	className:add("KUnitResult").
+	className:add("KUnitEvent").
 
 	local public is KUnitObject(className, protected).
 	
@@ -26,13 +22,13 @@ function KUnitResult {
 	set public#testCaseName to testCaseName.
 
 	// class methods
-	set public#toString to KUnitResult_toString@:bind(public).
-	set public#equals to KUnitResult_equals@:bind(public).
+	set public#toString to KUnitEvent_toString@:bind(public).
+	set public#equals to KUnitEvent_equals@:bind(public).
 
 	return public.
 }
 
-function KUnitResult_toString {
+function KUnitEvent_toString {
 	declare local parameter public.
 	local r is "".
 	if public#testName <> "" {
@@ -49,7 +45,7 @@ function KUnitResult_toString {
 	return r.
 }
 
-function KUnitResult_equals {
+function KUnitEvent_equals {
     declare local parameter public, other.
     if public = other {
         return true.

@@ -93,3 +93,10 @@
 // } else if actualList:lenth <> expectedList:length {
 //                      ^^^^^ causes chash
 //
+// Example 9:
+//
+//    local expected is "KUnit v0.0.2".
+//    local actual is KUnit_getVersionString().
+//    if not public#assertEquals(expected, actua) return.
+//                                             ^^ crash
+//

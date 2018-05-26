@@ -3,8 +3,8 @@
 runoncepath("kunit/class/KUnitPrinter").
 runoncepath("kunit/class/KUnitTest").
 runoncepath("kunit/class/KUnitReporter").
-runoncepath("kunit/class/KUnitResult").
-runoncepath("kunit/class/KUnitResultBuilder").
+runoncepath("kunit/class/KUnitEvent").
+runoncepath("kunit/class/KUnitEventBuilder").
 
 function KUnitTestTest {
     declare local parameter
@@ -17,7 +17,7 @@ function KUnitTestTest {
 	local private is lexicon().
 	local parentProtected is protected:copy().
 	
-	set private#resultBuilder to KUnitResultBuilder().
+	set private#eventBuilder to KUnitEventBuilder().
 	set private#printerMock to -1.
 	set private#reporterMock to -1.
 	set private#testObject to -1.
@@ -122,7 +122,7 @@ function KUnitTestTest_testAddCase_FailedIfCaseExists {
     object#addCase("foo", { }).
     
     // Then
-    local expected is KUnitResult("error", "Test case already registered: foo").
+    local expected is KUnitEvent("error", "Test case already registered: foo").
     if not public#assertObjectEquals(expected, captured) return.
 }
 
@@ -145,7 +145,7 @@ function KUnitTestTest_testAddCase_FailedIfRunning {
     object#run().
     
     // Then    
-    local expected is KUnitResult("error", "Unable to register new cases while running", "MyTest", "foo").
+    local expected is KUnitEvent("error", "Unable to register new cases while running", "MyTest", "foo").
     if not public#assertObjectEquals(expected, captured) return.
 }
 
@@ -341,23 +341,23 @@ function KUnitTestTest_testRun_TestOfNotificationSequence {
     local msg is "Number of notifications should be 5".
     if not public#assertEquals(5, actual:length, msg) return.
     
-    local expected is KUnitResult("success", "", "MyTest").
+    local expected is KUnitEvent("success", "", "MyTest").
     local msg is "Unexpected notification of test start".
     if not public#assertObjectEquals(expected, actual[0], msg) return.
     
-    local expected is KUnitResult("success", "", "MyTest", "testCase1").
+    local expected is KUnitEvent("success", "", "MyTest", "testCase1").
     local msg is "Unexpected notification of test case start".
     if not public#assertObjectEquals(expected, actual[1], msg) return.
 
-    local expected is KUnitResult("failure", "good message", "MyTest", "testCase1").
+    local expected is KUnitEvent("failure", "good message", "MyTest", "testCase1").
     local msg is "Unexpected notification of assertion result".
     if not public#assertObjectEquals(expected, actual[2], msg) return.
     
-    local expected is KUnitResult("success", "", "MyTest", "testCase1").
+    local expected is KUnitEvent("success", "", "MyTest", "testCase1").
     local msg is "Unexpected notification of test case end".
     if not public#assertObjectEquals(expected, actual[3], msg) return.
     
-    local expected is KUnitResult("success", "", "MyTest").
+    local expected is KUnitEvent("success", "", "MyTest").
     local msg is "Unexpected notification of test end".
     if not public#assertObjectEquals(expected, actual[4], msg) return.
 }
@@ -379,7 +379,7 @@ function KUnitTestTest_testFail {
 
     // Then
     if not public#assertFalse(r, "Expected result is false") return.
-    local expected is KUnitResult("failure", "Test failure message").
+    local expected is KUnitEvent("failure", "Test failure message").
     if not public#assertObjectEquals(expected, capture) return.
     
     // The case without message text
@@ -387,7 +387,7 @@ function KUnitTestTest_testFail {
     local r is object#fail().
     
     if not public#assertFalse(r, "Expected result is false [2]") return.
-    local expected is KUnitResult("failure").
+    local expected is KUnitEvent("failure").
     if not public#assertObjectEquals(expected, capture) return.
 }
 
@@ -405,25 +405,25 @@ function KUnitTestTest_testAssertThat {
     local r is object#assertThat({ return false. }, "Failure message").
 
     if not public#assertFalse(r, "Expected result is false") return.
-    local expected is KUnitResult("failure", "Failure message").
+    local expected is KUnitEvent("failure", "Failure message").
     if not public#assertObjectEquals(expected, capture) return.
     
     local r is object#assertThat({ return true. }, "Failure message").
     
     if not public#assertTrue(r, "Expected result is true") return.
-    local expected is KUnitResult("success").
+    local expected is KUnitEvent("success").
     if not public#assertObjectEquals(expected, capture) return.
     
     local r is object#assertThat({ return false. }).
     
     if not public#assertFalse(r, "Expected result is false [2]") return.
-    local expected is KUnitResult("failure", "Conditional requirement is not met").
+    local expected is KUnitEvent("failure", "Conditional requirement is not met").
     if not public#assertObjectEquals(expected, capture) return.
     
     local r is object#assertThat({ return true. }).
     
     if not public#assertTrue(r, "Expected result is true [2]") return.
-    local expected is KUnitResult("success").
+    local expected is KUnitEvent("success").
     if not public#assertObjectEquals(expected, capture) return.
 }
 
@@ -441,25 +441,25 @@ function KUnitTestTest_testAssertTrue {
     local r is object#assertTrue(false, "Failure message").
     
     if not public#assertFalse(r, "Expected result is false") return.
-    local expected is KUnitResult("failure", "Failure message").
+    local expected is KUnitEvent("failure", "Failure message").
     if not public#assertObjectEquals(expected, capture) return.
     
     local r is object#assertTrue(true, "Failure message").
     
     if not public#assertTrue(r, "Expected result is true") return.
-    local expected is KUnitResult("success").
+    local expected is KUnitEvent("success").
     if not public#assertObjectEquals(expected, capture) return.
     
     local r is object#assertTrue(false).
     
     if not public#assertFalse(r, "Expected result is false [2]") return.
-    local expected is KUnitResult("failure", "Expected true").
+    local expected is KUnitEvent("failure", "Expected true").
     if not public#assertObjectEquals(expected, capture) return.
     
     local r is object#assertTrue(true).
     
     if not public#assertTrue(r, "Expected result is true [2]") return.
-    local expected is KUnitResult("success").
+    local expected is KUnitEvent("success").
     if not public#assertObjectEquals(expected, capture) return.
 }
 
@@ -477,25 +477,25 @@ function KUnitTestTest_testAssertFalse {
     local r is object#assertFalse(true, "Error message").
     
     if not public#assertFalse(r, "Expected result is false") return.
-    local expected is KUnitResult("failure", "Error message").
+    local expected is KUnitEvent("failure", "Error message").
     if not public#assertObjectEquals(expected, capture) return.
     
     local r is object#assertFalse(false, "Error message").
     
     if not public#assertTrue(r, "Expected result is true") return.
-    local expected is KUnitResult("success").
+    local expected is KUnitEvent("success").
     if not public#assertObjectEquals(expected, capture) return.
     
     local r is object#assertFalse(true).
     
     if not public#assertFalse(r, "Expected result is false [2]") return.
-    local expected is KUnitResult("failure", "Expected false").
+    local expected is KUnitEvent("failure", "Expected false").
     if not public#assertObjectEquals(expected, capture) return.
     
     local r is object#assertFalse(false).
     
     if not public#assertTrue(r, "Expected result is true [2]") return.
-    local expected is KUnitResult("success").
+    local expected is KUnitEvent("success").
     if not public#assertObjectEquals(expected, capture) return.
 }
 
@@ -514,26 +514,26 @@ function KUnitTestTest_testAssertEquals {
     
     if not public#assertFalse(r, "Expected result is false") return.
     local msg is "Value is different. Values are not equal: expected: <[foo]> but was <[bar]>".
-    local expected is KUnitResult("failure", msg).
+    local expected is KUnitEvent("failure", msg).
     if not public#assertObjectEquals(expected, capture) return.
     
     local r is object#assertEquals("foo", "foo", "Value is different").
     
     if not public#assertTrue(r, "Expected result is true") return.
-    local expected is KUnitResult("success").
+    local expected is KUnitEvent("success").
     if not public#assertObjectEquals(expected, capture) return.
     
     local r is object#assertEquals("foo", "bar").
     
     if not public#assertFalse(r, "Expected result is false [2]") return.
     local msg is "Value equality expectation. Values are not equal: expected: <[foo]> but was <[bar]>".
-    local expected is KUnitResult("failure", msg).
+    local expected is KUnitEvent("failure", msg).
     if not public#assertObjectEquals(expected, capture) return.
     
     local r is object#assertEquals("foo", "foo").
     
     if not public#assertTrue(r, "Expected result is true [2]") return.
-    local expected is KUnitResult("success").
+    local expected is KUnitEvent("success").
     if not public#assertObjectEquals(expected, capture) return.
 }
 
@@ -554,7 +554,7 @@ function KUnitTestTest_testAssertListEquals {
     
     if not public#assertFalse(r, "Expected that list should not be equal") return.
     local msg is "List is different. Number of elements: expected: <[3]> but was <[2]>".
-    local expected is KUnitResult("failure", msg).
+    local expected is KUnitEvent("failure", msg).
     if not public#assertObjectEquals(expected, capture) return.
     
     local actualList is list("one", "two", "more").
@@ -562,14 +562,14 @@ function KUnitTestTest_testAssertListEquals {
     
     if not public#assertFalse(r, "Two lists with different values should not be equal") return.
     local msg is "List is different. element #2 mismatch: expected: <[three]> but was <[more]>".
-    local expected is KUnitResult("failure", msg).
+    local expected is KUnitEvent("failure", msg).
     if not public#assertObjectEquals(expected, capture) return.
     
     local actualList is list("one", "two", "three").
     local r is object#assertListEquals(expectedList, actualList, "List is different").
     
     if not public#assertTrue(r, "When all elements are equal then lists should be equal").
-    local expected is KUnitResult("success").
+    local expected is KUnitEvent("success").
     if not public#assertObjectEquals(expected, capture) return.
     
     // without specified message
@@ -579,7 +579,7 @@ function KUnitTestTest_testAssertListEquals {
     
     if not public#assertFalse(r, "Expected that list should not be equal [2]") return.
     local msg is "List equality expectation. Number of elements: expected: <[3]> but was <[2]>".
-    local expected is KUnitResult("failure", msg).
+    local expected is KUnitEvent("failure", msg).
     if not public#assertObjectEquals(expected, capture) return.
     
     local actualList is list("one", "two", "more").
@@ -587,14 +587,14 @@ function KUnitTestTest_testAssertListEquals {
     
     if not public#assertFalse(r, "Two lists with different values should not be equal [2]") return.
     local msg is "List equality expectation. element #2 mismatch: expected: <[three]> but was <[more]>".
-    local expected is KUnitResult("failure", msg).
+    local expected is KUnitEvent("failure", msg).
     if not public#assertObjectEquals(expected, capture) return.
     
     local actualList is list("one", "two", "three").
     local r is object#assertListEquals(expectedList, actualList).
     
     if not public#assertTrue(r, "When all elements are equal then lists should be equal [2]").
-    local expected is KUnitResult("success").
+    local expected is KUnitEvent("success").
     if not public#assertObjectEquals(expected, capture) return.
 }
 
@@ -616,14 +616,14 @@ function KUnitTestTest_testAssertObjectEquals {
     if not public#assertFalse(r, "Different instances shouldn't be equal") return.
     local msg is "Test message. Failed: expected: <[" +
         expectedObject#toString() + "]> but was <[" + actualObject#toString() + "]>".
-    local expected is KUnitResult("failure", msg).
+    local expected is KUnitEvent("failure", msg).
     if not public#assertObjectEquals(expected, capture) return.
     
     local actualObject is expectedObject.
     local r is object#assertObjectEquals(expectedObject, actualObject, "Test message").
     
     if not public#assertTrue(r, "Same instances should be equal") return.
-    local expected is KUnitResult("success").
+    local expected is KUnitEvent("success").
     if not public#assertObjectEquals(expected, capture) return.
 
     // Without a special message
@@ -633,14 +633,14 @@ function KUnitTestTest_testAssertObjectEquals {
     if not public#assertFalse(r, "Different instances shouldn't be equal [2]") return.
     local msg is "Object equality expectation. Failed: expected: <[" +
         expectedObject#toString() + "]> but was <[" + actualObject#toString() + "]>".
-    local expected is KUnitResult("failure", msg).
+    local expected is KUnitEvent("failure", msg).
     if not public#assertObjectEquals(expected, capture) return.
     
     local actualObject is expectedObject.
     local r is object#assertObjectEquals(expectedObject, actualObject).
     
     if not public#assertTrue(r, "Same instances should be equal [2]") return.
-    local expected is KUnitResult("success").
+    local expected is KUnitEvent("success").
     if not public#assertObjectEquals(expected, capture) return.
 }
 
@@ -654,20 +654,20 @@ function KUnitTestTest_testAssertObjectListEquals {
         set capture to x.
     }.
     local object is private#testObject.
-    local builder is private#resultBuilder.
+    local builder is private#eventBuilder.
     
-    // KUnitResult itself is a good candidate to test object list comparison.
+    // KUnitEvent itself is a good candidate to test object list comparison.
     // We will use its instance to test object list equality assert.
     // We will not fill it in all possible combinations of attributes
-    // to keep the test is easy to understand. Because we know that KUnitResult
+    // to keep the test is easy to understand. Because we know that KUnitEvent
     // is well tested and works properly.  
 
     local expectedList is list().
-    expectedList:add(KUnitResult("foo")).
-    expectedList:add(KUnitResult("bar")).
+    expectedList:add(KUnitEvent("foo")).
+    expectedList:add(KUnitEvent("bar")).
     
     local actualList is list().
-    actualList:add(KUnitResult("foo")).
+    actualList:add(KUnitEvent("foo")).
 
     local r is object#assertObjectListEquals(expectedList, expectedList, "Test msg").
     local msg is "Object list instance should be equal to itself".
@@ -684,7 +684,7 @@ function KUnitTestTest_testAssertObjectListEquals {
     local expected is builder#buildFailure(msg).
     if not public#assertObjectEquals(expected, capture) return.
 
-    actualList:add(KUnitResult("buz")).
+    actualList:add(KUnitEvent("buz")).
     local r is object#assertObjectListEquals(expectedList, actualList, "Test msg").
     local msg is "Object lists which contains different objects should not be equal".
     if not public#assertFalse(r, msg) return.
@@ -693,7 +693,7 @@ function KUnitTestTest_testAssertObjectListEquals {
     local expected is builder#buildFailure(msg).
     if not public#assertObjectEquals(expected, capture) return.
 
-    set actualList[1] to KUnitResult("bar").
+    set actualList[1] to KUnitEvent("bar").
     local r is object#assertObjectListEquals(expectedList, actualList, "Test msg").
     local msg is "Object lists with similar elements should be equal".
     if not public#assertTrue(r, msg) return.
@@ -712,14 +712,14 @@ function KUnitTestTest_testAssertObjectListEquals_DefaultMsg {
         set capture to x.
     }.
     local object is private#testObject.
-    local builder is private#resultBuilder.
+    local builder is private#eventBuilder.
 
     local expectedList is list().
-    expectedList:add(KUnitResult("foo")).
-    expectedList:add(KUnitResult("bar")).
+    expectedList:add(KUnitEvent("foo")).
+    expectedList:add(KUnitEvent("bar")).
     
     local actualList is list().
-    actualList:add(KUnitResult("foo")).
+    actualList:add(KUnitEvent("foo")).
 
     local r is object#assertObjectListEquals(expectedList, expectedList).
     local msg is "Object list instance should be equal to itself".
@@ -736,7 +736,7 @@ function KUnitTestTest_testAssertObjectListEquals_DefaultMsg {
     local expected is builder#buildFailure(msg).
     if not public#assertObjectEquals(expected, capture) return.
 
-    actualList:add(KUnitResult("buz")).
+    actualList:add(KUnitEvent("buz")).
     local r is object#assertObjectListEquals(expectedList, actualList).
     local msg is "Object lists which contains different objects should not be equal".
     if not public#assertFalse(r, msg) return.
@@ -745,7 +745,7 @@ function KUnitTestTest_testAssertObjectListEquals_DefaultMsg {
     local expected is builder#buildFailure(msg).
     if not public#assertObjectEquals(expected, capture) return.
 
-    set actualList[1] to KUnitResult("bar").
+    set actualList[1] to KUnitEvent("bar").
     local r is object#assertObjectListEquals(expectedList, actualList).
     local msg is "Object lists with similar elements should be equal".
     if not public#assertTrue(r, msg) return.

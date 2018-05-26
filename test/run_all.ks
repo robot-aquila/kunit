@@ -1,19 +1,19 @@
 // Run all KUnit self-tests
 @lazyglobal off.
 
-runoncepath("kunit/class/KUnitReporter").
-local reporter is KUnitReporter().
+//runoncepath("kunit/class/KUnitReporter").
+//local reporter is KUnitReporter().
 
 //runoncepath("kunit/test/KUnitObjectTest").
 //local test is KUnitObjectTest(reporter).
 //test#run().
 
-//runoncepath("kunit/test/KUnitResultTest").
-//local test is KUnitResultTest(reporter).
+//runoncepath("kunit/test/KUnitEventTest").
+//local test is KUnitEventTest(reporter).
 //test#run().
 
-//runoncepath("kunit/test/KUnitResultBuilderTest").
-//local test is KUnitResultBuilderTest(reporter).
+//runoncepath("kunit/test/KUnitEventBuilderTest").
+//local test is KUnitEventBuilderTest(reporter).
 //test#run().
 
 //runoncepath("kunit/test/KUnitPrinterTest").
@@ -36,12 +36,17 @@ local reporter is KUnitReporter().
 //local test is KUnitFileTest(reporter).
 //test#run().
 
-runoncepath("kunit/test/KUnitFileUtilsTest").
-local test is KUnitFileUtilsTest(reporter).
-test#run().
+//runoncepath("kunit/test/KUnitFileUtilsTest").
+//local test is KUnitFileUtilsTest(reporter).
+//test#run().
+
+//runoncepath("kunit/class/KUnitFile").
+//runoncepath("kunit/class/KUnitRunner").
+//local r is KUnitRunner(KUnitFile(path("kunit/test"))).
+//r#run().
 
 //runoncepath("kunit/class/KUnitRunner").
 //local runner is KUnitRunner("kunit/test").
 //runner#run().
 
-reporter#printReportSummary().
+//reporter#printReportSummary().

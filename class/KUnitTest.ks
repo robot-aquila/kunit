@@ -1,7 +1,7 @@
 // Base class of unit test
 
 runoncepath("kunit/class/KUnitObject").
-runoncepath("kunit/class/KUnitResultBuilder").
+runoncepath("kunit/class/KUnitEventBuilder").
 
 // Constructor.
 // Return: Unit test instance.
@@ -23,7 +23,7 @@ function KUnitTest {
     set private#reporter to reporter.
     set private#testName to testName.
 	set private#shuffleTestCases to true.
-    set private#resultBuilder to KUnitResultBuilder().
+    set private#eventBuilder to KUnitEventBuilder().
     set private#isRunning to false.
 
 	// Map: case name -> test function. Also it is used to check that test
@@ -152,24 +152,24 @@ function KUnitTest_run {
 	   includeNamePattern is "". // test case selection pattern (optional)
 	   
     local reporter is private#reporter.
-    local resultBuilder is private#resultBuilder.
+    local eventBuilder is private#eventBuilder.
 
 	// TODO: add shuffle of test cases
 	
-    resultBuilder#setTestName(private#testName).
-    resultBuilder#setTestCaseName("").
+    eventBuilder#setTestName(private#testName).
+    eventBuilder#setTestCaseName("").
     if not protected#setUpTest() {
         private#reportError("Test setup failed").
         protected#tearDownTest().
         return.
     }
     
-    local result is resultBuilder#buildSuccess().
+    local result is eventBuilder#buildSuccess().
     reporter#notifyOfTestStart(result).
 
     set private#isRunning to true.    
     for testCaseName in private#testCasesList {
-        resultBuilder#setTestCaseName(testCaseName).
+        eventBuilder#setTestCaseName(testCaseName).
         if includeNamePattern:length > 0 and
             not testCaseName:matchespattern(includeNamePattern)
         {
@@ -179,7 +179,7 @@ function KUnitTest_run {
             private#reportError("Test case setup failed").
             protected#tearDown().
         } else {
-            set result to resultBuilder#buildSuccess().
+            set result to eventBuilder#buildSuccess().
             reporter#notifyOfTestCaseStart(result).
             local testCaseFunction is private#testCases[testCaseName].
             testCaseFunction().
@@ -189,18 +189,18 @@ function KUnitTest_run {
     }
     set private#isRunning to false.
         
-    resultBuilder#setTestCaseName("").
+    eventBuilder#setTestCaseName("").
     protected#tearDownTest().
-    set result to resultBuilder#buildSuccess().
+    set result to eventBuilder#buildSuccess().
     reporter#notifyOfTestEnd(result).
-    resultBuilder#setTestName("").
+    eventBuilder#setTestName("").
 }
 
 
 function KUnitTest_fail {
     declare local parameter public, private, msg is "".
     local reporter is private#reporter.
-    local builder is private#resultBuilder.
+    local builder is private#eventBuilder.
     local result is builder#buildFailure(msg).
     reporter#notifyOfAssertionResult(result).
     return false.
@@ -209,7 +209,7 @@ function KUnitTest_fail {
 function KUnitTest_assertThat {
 	declare local parameter public, private, assertFunction, msg is "Conditional requirement is not met".
     local reporter is private#reporter.
-    local builder is private#resultBuilder.
+    local builder is private#eventBuilder.
     local result is builder#buildSuccess().
     local ret is assertFunction().
 	if not ret {
@@ -233,7 +233,7 @@ function KUnitTest_assertFalse {
 function KUnitTest_assertEquals {
     declare local parameter public, private, expected, actual, msg is "Value equality expectation".
     local reporter is private#reporter.
-    local builder is private#resultBuilder.
+    local builder is private#eventBuilder.
     local result is builder#buildSuccess().
     local ret is true.
     if actual = expected {
@@ -249,7 +249,7 @@ function KUnitTest_assertEquals {
 function KUnitTest_assertListEquals {
     declare local parameter public, private, expected, actual, msg is "List equality expectation".
     local reporter is private#reporter.
-    local builder is private#resultBuilder.
+    local builder is private#eventBuilder.
     local result is builder#buildSuccess().
     local ret is true.
     if actual = expected {
@@ -283,7 +283,7 @@ function KUnitTest_assertObjectEquals {
         actualObject,
         msg is "Object equality expectation".
     local reporter is private#reporter.
-    local builder is private#resultBuilder.
+    local builder is private#eventBuilder.
     local result is builder#buildSuccess().
     local ret is true.
     if not actualObject#equals(expectedObject) {
@@ -301,7 +301,7 @@ function KUnitTest_assertObjectListEquals {
         actualList,
         msg is "Object list equality expectation".
     local reporter is private#reporter.
-    local builder is private#resultBuilder.
+    local builder is private#eventBuilder.
     local result is builder#buildSuccess().
     local ret is true.
     if actualList = expectedList {
@@ -342,7 +342,7 @@ function KUnitTest_assertObjectListEquals {
 function KUnitTest_reportError {
 	declare local parameter public, private, msg.
 	local reporter is private#reporter.
-	local builder is private#resultBuilder.
+	local builder is private#eventBuilder.
 	local result is builder#buildError(msg).
 	reporter#notifyOfError(result).
 }

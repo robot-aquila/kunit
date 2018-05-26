@@ -7,7 +7,7 @@
 //
 // Example:
 // 
-// local expected is KUnitResult("failure", "Test failure message"). 
+// local expected is KUnitEvent("failure", "Test failure message"). 
 // print "EXPECTED: " + expected#toString(). // <-- works
 // print "EXPECTED: " + expected. 			 // <-- causes crash
 //

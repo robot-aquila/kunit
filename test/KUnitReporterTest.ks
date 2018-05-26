@@ -5,7 +5,7 @@
 
 runoncepath("kunit/class/KUnitTest").
 runoncepath("kunit/class/KUnitReporter").
-runoncepath("kunit/class/KUnitResultBuilder").
+runoncepath("kunit/class/KUnitEventBuilder").
 
 function KUnitReporterTest {
     declare local parameter
@@ -21,7 +21,7 @@ function KUnitReporterTest {
     
     set private#printerMock to -1.
     set private#testObject to -1.
-    set private#resBuilder to -1.
+    set private#eventBuilder to -1.
     
     set protected#setUp to KUnitReporterTest_setUp@:bind(private, parentProtected).
     set protected#tearDown to KUnitReporterTest_tearDown@:bind(private, parentProtected).
@@ -47,7 +47,7 @@ function KUnitReporterTest_setUp {
 
     set private#printerMock to KUnitPrinter().
     set private#testObject to KUnitReporter(private#printerMock).
-    set private#resBuilder to KUnitResultBuilder("TestName", "testCase").
+    set private#eventBuilder to KUnitEventBuilder("TestName", "testCase").
     
     return true.
 }
@@ -56,7 +56,7 @@ function KUnitReporterTest_tearDown {
     declare local parameter private, parentProtected.
     
     private#testObject:clear().
-    private#resBuilder:clear().
+    private#eventBuilder:clear().
     private#printerMock:clear().
     
     parentProtected#tearDown().
@@ -72,7 +72,7 @@ function KUnitReporterTest_testCtor {
 function KUnitReporterTest_testNotifyOfTestStart {
     declare local parameter public, private.
 
-    local builder is private#resBuilder.
+    local builder is private#eventBuilder.
     local object is private#testObject.
     local printerMock is private#printerMock.
     local captured is -1.
@@ -91,7 +91,7 @@ function KUnitReporterTest_testNotifyOfTestStart {
 function KUnitReporterTest_testNotifyOfTestCaseStart {
     declare local parameter public, private.
     
-    local builder is private#resBuilder.
+    local builder is private#eventBuilder.
     local object is private#testObject.
     local printerMock is private#printerMock.
     local captured is -1.
@@ -109,7 +109,7 @@ function KUnitReporterTest_testNotifyOfTestCaseStart {
 function KUnitReporterTest_testNotifyOfAssertionResult {
     declare local parameter public, private.
     
-    local builder is private#resBuilder.
+    local builder is private#eventBuilder.
     local object is private#testObject.
     local printerMock is private#printerMock.
     local captured is -1.
@@ -127,7 +127,7 @@ function KUnitReporterTest_testNotifyOfAssertionResult {
 function KUnitReporterTest_testNotifyOfTestCaseEnd {
     declare local parameter public, private.
     
-    local builder is private#resBuilder.
+    local builder is private#eventBuilder.
     local object is private#testObject.
     local printerMock is private#printerMock.
     local captured is -1.
@@ -145,7 +145,7 @@ function KUnitReporterTest_testNotifyOfTestCaseEnd {
 function KUnitReporterTest_testNotifyOfTestEnd {
     declare local parameter public, private.
     
-    local builder is private#resBuilder.
+    local builder is private#eventBuilder.
     local object is private#testObject.
     local printerMock is private#printerMock.
     local captured is -1.
@@ -164,7 +164,7 @@ function KUnitReporterTest_testNotifyOfTestEnd {
 function KUnitReporterTest_testNotifyOfError {
     declare local parameter public, private.
 
-    local builder is private#resBuilder.
+    local builder is private#eventBuilder.
     local object is private#testObject.
     local printerMock is private#printerMock.
     local captured is -1.
@@ -196,6 +196,7 @@ function KUnitReporterTest_testPrintReportSummary_Redline {
     // failure. The third test will finish with an error. So we can predict the
     // summarty report. It should be:
     
+    local vers is KUnit_getVersionString().
     local expected is list().
     expected:add("== REDLINE ===============================").
     expected:add("                  total |success | failed ").
@@ -203,9 +204,9 @@ function KUnitReporterTest_testPrintReportSummary_Redline {
     expected:add("     test cases:      2 |      1 |      1 ").
     expected:add("          tests:      2 |      1 |      1 ").
     expected:add("         errors:      1                   ").
-    expected:add("========================== KUnit v0.0.1 ==").
+    expected:add("========================== " + vers + " ==").
 
-    local builder is private#resBuilder.
+    local builder is private#eventBuilder.
     local object is private#testObject.
     local printerMock is private#printerMock.
     
@@ -256,6 +257,7 @@ function KUnitReporterTest_testPrintReportSummary_Greenline {
 
     // GIVEN
 
+    local vers is KUnit_getVersionString().
     local expected is list().
     expected:add("== GREENLINE =============================").
     expected:add("                  total |success | failed ").
@@ -263,9 +265,9 @@ function KUnitReporterTest_testPrintReportSummary_Greenline {
     expected:add("     test cases:      2 |      2 |      0 ").
     expected:add("          tests:      2 |      2 |      0 ").
     expected:add("         errors:      0                   ").
-    expected:add("========================== KUnit v0.0.1 ==").
+    expected:add("========================== " + vers + " ==").
 
-    local builder is private#resBuilder.
+    local builder is private#eventBuilder.
     local object is private#testObject.
     local printerMock is private#printerMock.
     
