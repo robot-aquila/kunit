@@ -8,7 +8,8 @@ function KUnitRunner {
     declare local parameter
         suiteRootDir,
         reporter is KUnitReporter(),
-        filePattern is "test\.ksm?$".
+        filePattern is "test\.ksm?$",
+        .
     
     local protected is lexicon().
     local public is KUnitObject("KUnitRunner", protected).

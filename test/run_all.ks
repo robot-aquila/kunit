@@ -28,8 +28,12 @@ local reporter is KUnitReporter().
 //local test is KUnitReporterTest(reporter).
 //test#run().
 
-runoncepath("kunit/test/KUnitTestTest").
-local test is KUnitTestTest(reporter).
+//runoncepath("kunit/test/KUnitTestTest").
+//local test is KUnitTestTest(reporter).
+//test#run().
+
+runoncepath("kunit/test/KUnitFileTest").
+local test is KUnitFileTest(reporter).
 test#run().
 
 //runoncepath("kunit/class/KUnitRunner").

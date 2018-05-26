@@ -56,7 +56,7 @@ get two independent copies of attributes if they are primitive types. Better to
 keep all properties private and use protected mutator/accessor to provide an
 access to them for derived classes.
 
-### Where object#mamber does not work
+### Where object#member does not work
 
 In some cases referencing with # does not work
 ```
