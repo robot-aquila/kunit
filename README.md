@@ -1,6 +1,6 @@
 # KUnit - Unit Testing framework for kerboscript
 
-#### Note: This project is not part of [KOS project](https://github.com/KSP-KOS/KOS). Please don't ask to do something with KOS.
+<b>Note: This project is not part of [KOS project](https://github.com/KSP-KOS/KOS). Please don't ask to do something with KOS.</b>
 
 KUnit provides possibility to write repeatable tests for kerboscript -
 [KOS programming language](https://github.com/KSP-KOS/KOS). KUnit is an
@@ -34,12 +34,89 @@ In this case you'll never face with problems programming on KOS.
 
 ## Get started
 
-To get started just run KUnit unit tests. Let's assume that you placed KUnit to
-Archive volume. Open KOS terminal and run:
+To get started just run KUnit unit tests. Let's assume that you placed KUnit to Archive volume. Open KOS terminal and run:
+
 ```
+switch to 0.
 runpath("kunit/suite", "kunit/test").
 ```
+It may take few seconds to scan for test files then testing process begin.
+If finally you see something like that
+```
+== GREENLINE =============================
+                  total |success | failed
+     assertions:    371 |    371 |      0
+     test cases:    114 |    114 |      0
+          tests:     14 |     14 |      0
+         errors:      0
+========================== KUnit v0.0.2 ==
+```
+then you definitely can use all features and approaches KUnit suggests. GREENLINE is a key. This means all tests passed without failures and errors. 
 
+Want to see how failures will look? Just run example test cases
+```
+runpath("kunit/suite", "kunit/examples").
+```
+After passing the tests you will see something like that
+```
+MyTestName#testmycase1 testCaseEnd
+MyTestName#testmycase2 testCaseStart
+MyTestName#testmycase2 testCaseEnd
+MyTestName testEnd
+== REDLINE ===============================
+                  total |success | failed
+     assertions:     12 |      2 |     10
+     test cases:      6 |      1 |      5
+          tests:      3 |      0 |      3
+         errors:      1
+========================== KUnit v0.0.2 ==
+FAILURES:
+FailuresDemoTest#teststringsarentequal assertion[0]failure: Value equality expectation. Values are not equal: expected: <[foo]> but was <[bar]>
+FailuresDemoTest#testwhatifdonotcheckassertionresult assertion[0]failure: You will see. element #0 mismatch: expected: <[foo]> but was <[bar]>
+FailuresDemoTest#testwhatifdonotcheckassertionresult assertion[1]failure: more output
+FailuresDemoTest#testwhatifdonotcheckassertionresult assertion[2]failure: until test ended. Failed: expected: <[KUnitObject@41]> but was <[KUnitObject@42]>
+FailuresDemoTest#testhowtoidentifyfailurelocation assertion[2]failure: Have a look on assertion[X] information.
+FailuresDemoTest#testhowtoidentifyfailurelocation assertion[3]failure: You can identify assertion by its index
+FailuresDemoTest#testhowtoidentifyfailurelocation assertion[4]failure: which is shown in [] brackets.
+FailuresDemoTest#testhowtoidentifyfailurelocation assertion[5]failure: Then find assertion in the test case and fix the problem
+FailuresDemoTest#testhowtoidentifyfailurelocation assertion[6]failure: That's easy
+MyTestName#testmycase1 assertion[0]failure: Value equality expectation. Values are not equal: expected: <[foo]> but was <[bar]>
+ERRORS:
+ErrorsDemoTest#testerrorsarentfailures error: Test case setup failed
+```
+Have you noticed there is REDLINE? REDLINE means there are problems with the passed tests or code under test.
+
+<b>Note: REDLINE or GREENLINE is the most significant report you should track while doing TDD.</b>
+
+Do not worry that there is a REDLINE here. Those test especially written to demonstrate how KUnit will handle failures and errors. Let's get deeper what we see in case of failures. I will cut the output to make it a bit  nicer. Consider that output is eqivalent to the last one
+
+```
+MyTestName#testmycase1 testCaseEnd
+MyTestName#testmycase2 testCaseStart                
+MyTestName#testmycase2 testCaseEnd
+MyTestName testEnd                               <-- here and above is the test execution log section
+== REDLINE ===============================    
+                  total |success | failed
+     assertions:     12 |      2 |     10
+     test cases:      6 |      1 |      5        <-- here is summary report of the test run
+          tests:      3 |      0 |      3
+         errors:      1
+========================== KUnit v0.0.2 ==
+
+FAILURES:                                        <-- here and below is assertion failures report
+FailuresDemoTest#teststringsarentequal assert...
+FailuresDemoTest#testwhatifdonotcheckassertio...
+FailuresDemoTest#testwhatifdonotcheckassertio...
+FailuresDemoTest#testwhatifdonotcheckassertio...
+FailuresDemoTest#testhowtoidentifyfailureloca...
+FailuresDemoTest#testhowtoidentifyfailureloca...
+FailuresDemoTest#testhowtoidentifyfailureloca...
+FailuresDemoTest#testhowtoidentifyfailureloca...
+FailuresDemoTest#testhowtoidentifyfailureloca...
+MyTestName#testmycase1 assertion[0]failure: V...
+ERRORS:                                          <-- here and below is test error report
+ErrorsDemoTest#testerrorsarentfailures error:...
+```
 
 TODO:
 
