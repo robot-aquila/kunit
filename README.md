@@ -88,7 +88,7 @@ Have you noticed there is REDLINE? REDLINE means there are problems with the pas
 
 <b>Note: REDLINE or GREENLINE is the most significant report you should track while doing TDD.</b>
 
-Do not worry that there is a REDLINE here. Those tests especially written to demonstrate how KUnit will handle failures and errors. Let's get deeper what we see in case of failures. I will cut the output to make it a bit  nicer. Consider that output is eqivalent to the last one
+Do not worry that there is the REDLINE here. Those tests especially written to demonstrate how KUnit will handle failures and errors. Let's get deeper what we see in case of failures. I will cut the output to make it a bit  nicer. Consider that output is eqivalent to the last one
 
 ```
 MyTestName#testmycase1 testCaseEnd
@@ -125,24 +125,77 @@ Let's figure out why we need each section. Each section is quite important as th
 
 * Assertion failures report lists all registered failures. Test execution log may contain so many lines to make investigation process quite hard. Actually we do not need anything else instead of information about failures and errors. Therefore there is assertion failures report. Keep in mind that all assertions inside a single test case have its own index. Index means in what order this statement follows in the body of the test case. KOS does not provide any information about what line of code caused a problem. Therefore KUnit suggests assertion indexation to make issue localization easier. So you can find appropriate assertion even if it does not provide detailed message. Assertion failures report is the section you will use most time while doing TDD. 
 
-* And the last one - is the error reporting section. Errors are not assertion failures. Failures are related to code under test. But errors are related to test code itself. Most time you will not see this section. But sometimes your test may include more interaction with test environment. And in case if there are problems with test environment there will be test errors. For example you test is to create files but volume size limit is reached. This will cause problems but your code under test is actually fine. There will be a test error, not your code failure. To separate such situations from test cases, there are errors. This section is the last one because most cases you do not need to fix your code in case of error. Errors may cause assertion failures. And to get a greenline, you have to fix errors first. Because of this, the error reporting section should be at most visible position.
+* And the last one - is the error reporting section. Errors are not assertion failures. Failures are related to code under test. But errors are related to test code itself. Most time you will not see this section. But sometimes your test may include more interaction with test environment. And in case if there are problems with test environment there will be test errors. For example you test is to create files but volume size limit is reached. This will cause problems but your code under test is actually fine. There will be a test error, not your code failure. To separate such situations from test cases, there are errors. This section is the last one because most cases you do not need to fix your code in case of error. Errors may cause assertion failures. And to get the GREENLINE, you have to fix errors first. Because of this, the error reporting section should be at most visible position.
 
-Hope that paragraph was clear enough to make you excited of KUnit possibilities. If so, let's go ahead.
+Hope this paragraph was clear enough to make you excited of KUnit possibilities. If so, let's go ahead.
 
-## How to run test
+## How to run tests
 
-TODO:
+There is two meaning of runner term: the first one is the program to run your test and the second one is the class which implements how tests will run. This paragraph is about program to run your tests.
+
+If you have a look on contents of kunit directory you will see two strange files: single.ks and suite.ks. They are test runners. The first one is to run single test and the second is for big test suites. They are do not have a lot differencies but one important: the test execution speed (telling more precise is the scanning for tests). Let's look at how to use these programs.
+
+Running suite is useful when you going to make a commit of your project. Running suite allows you run all existing tests. And the good practive is run all tests before commiting to be sure nothing is broken. If you run kunit/suite without an arguments you will see something like that
+```
+runpath("kunit/suite").
+Welcome to KUnit v0.0.2 test suite runner
+Usage:
+  runpath(kunit/suite, <SUITE_DIRECTORY>, [NAME_PATTERN], [CASE_PATTERN]).
+
+NOTE: Use double quotes when needed.
+      KOS does not support escape sequences to show exact commands.
+
+Usage examples
+
+Show this help:
+  runpath(kunit/suite).
+
+Run all KUnit tests:
+  runpath(kunit/suite, kunit/test).
+
+Run KUnitObjectTest only:
+  runpath(kunit/suite, kunit/test, KUnitObject).
+  runpath(kunit/suite, kunit/test, KUnitObjectTest).
+
+Run testToString case of KUnitObjectTest only:
+  runpath(kunit/suite, kunit/test, KUnitObject, testToString).
+
+Run testToString and testEquals of KUnitObjectTest:
+  runpath(kunit/suite, kunit/test, KUnitObject, test(ToString|Equals).
+```
+This is a help page you will see any time while run without arguments or run with wrong arguments. In additional if there is wrong argument you will see something like that at head
+```
+runpath("kunit/suite", "very-bad-suite-directory").
+ERROR: Suite path you entered is not directory or not exists: very-bad-suite-directory
+ERROR: Check the path and try again
+Welcome to KUnit v0.0.2 test suite runner
+...
+```
+Keep an eye on such errors because it's generally often case when you mistaken while switching before suites. So the suite path is just a path to directory contain set of unit tests which are written KUnit-way. Correct examples of path to suite in KUnit package are kunit/examples and kunit/tests. You can use ANY paths relative or absolute. Both should work. Suite path is mandatory argument if you want to get it work.
+
+The last two arguments NAME_PATTERN and CASE_PATTERN are regular expression patterns to select tests or test cases to run.
+Don't worry if you do not understand regular expressions. It will work if you will use it in simple inclusion patterns without any special characters. For example this command will run only test which name is KUnitObjectTest:
+```
+runpath("kunit/suite", "kunit/test", "KUnitObjectTest").
+```
+This one will run only one test case called testEquals of KUnitObjectTest
+```
+runpath("kunit/suite", "kunit/test", "KUnitObjectTest", "testEquals").
+```
+And so on. You see this quite enough for most cases.
+
+
+
+
 
 ### How to write Unit Tests
 
-To get started have a look on files in kunit/examples. Those classes are
-especially simplified. Some useful (I hope) comments are provided.
+To get started writing tests have a look on files in kunit/examples. Those classes are
+written especially simplified. Some useful (I hope) comments are provided.
 
+Also, KUnit is covered by self-tests. Those tests have lot examples of basics and tricks how to test your code. Study it and you could do TDD as pro. All KUnit self-tests are located in kunit/test subdirectory of project root. 
 
-Also KUnit covered by self-tests. Those tests have lot examples of basics and
-tricks how to test your code. Study it and you could do TDD as pro. All KUnit
-self-tests are located in kunit/test subdirectory of project root. 
-
+I hope here will be more useful examples soon.
 
 ## Known issues
 
