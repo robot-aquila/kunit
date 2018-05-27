@@ -6,6 +6,8 @@ KUnit provides possibility to write repeatable tests for kerboscript -
 [KOS programming language](https://github.com/KSP-KOS/KOS). KUnit is an
 instance of the xUnit architecture for unit testing frameworks.
 
+KUnit shouldn't force to write any tests but should help write any test you want for any code you want in case when you feel that it should be tested. There is a way how to implement, organize and run your tests. And this is KUnit. If you found this tool nice and helpful this means KUnit works well.
+
 KUnit also demonstrates how to use object-oriented approach in KOS
 programs to achieve well-looking design, maximum code reusability and
 exceptional software quality.
@@ -190,7 +192,34 @@ runpath("kunit/suite", "kunit/test", "KUnit(Report).*?Test").
 ```
 And so on. 
 
-### How to write Unit Tests
+Let's have a look on single test runner
+```
+runpath("kunit/single").
+Welcome to KUnit v0.0.2 single test runner
+Usage:
+  runpath(kunit/single, <TEST_PATH>, [CASE_PATTERN]).
+
+NOTE: Use double quotes when needed.
+      KOS does not support escape sequences to show exact commands.
+
+Usage examples
+
+Show this help:
+  runpath(kunit/single).
+
+Run all cases of KUnitObjectTest:
+  runpath(kunit/single, kunit/test/KUnitObjectTest).
+
+Run testToString case of KUnitObjectTest:
+  runpath(kunit/single, kunit/test/KUnitObjectTest, testToString).
+
+Run testToString and testEquals of KUnitObjectTest:
+  runpath(kunit/single, kunit/test/KUnitObjectTest, test(ToString|Equals).
+
+```
+This runner is quite similar to suite runner. The difference is second argument is a path to test file. There is no test filtering pattern but still test case pattern. It works similar to suite runner. As noticed above, the single test runner works a bit faster because it does not need to scan directories for test files. You should use single runner while working with tests separately of each other.
+
+## How to write Unit Tests
 
 To get started writing tests have a look on files in kunit/examples. Those classes are
 written especially simplified. Some useful (I hope) comments are provided.
