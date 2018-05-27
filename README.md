@@ -182,11 +182,13 @@ This one will run only one test case called testEquals of KUnitObjectTest
 ```
 runpath("kunit/suite", "kunit/test", "KUnitObjectTest", "testEquals").
 ```
-And so on. You see this quite enough for most cases.
-
-
-
-
+You see this quite enough for most cases. When you get ready you could easily choose test cases in more precise manner
+```
+runpath("kunit/suite", "kunit/test", "KUnit(Object|Reporter)Test").
+runpath("kunit/suite", "kunit/test", "KUnitObjectTest", "test(Equals|ToString)").
+runpath("kunit/suite", "kunit/test", "KUnit(Report).*?Test").
+```
+And so on. 
 
 ### How to write Unit Tests
 
