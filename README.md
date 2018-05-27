@@ -41,7 +41,7 @@ switch to 0.
 runpath("kunit/suite", "kunit/test").
 ```
 It may take few seconds to scan for test files then testing process begin.
-If finally you see something like that
+Finally if you see something like that
 ```
 == GREENLINE =============================
                   total |success | failed
