@@ -4,13 +4,19 @@
 parameter suitePath is "", testNamePattern is "", testCasePattern is "".
 
 runoncepath("kunit/class/KUnit").
+runoncepath("kunit/class/KUnitFile").
 runoncepath("kunit/class/KUnitReporter").
 runoncepath("kunit/class/KUnitRunner").
+runoncepath("kunit/class/KUnitReportPrinter").
 
 main().
 function main {
     local suiteFile is KUnitFile(path(suitePath)).
-    if not suiteFile#isDir() {
+    if not suitePath or not suiteFile#isDir() {
+        if suitePath and not suiteFile#isDir() {
+            print "ERROR: Suite path you entered is not directory or not exists: " + suitePath.
+            print "ERROR: Check the path and try again".
+        }
         local spath is "kunit/suite".
         print "Welcome to " + KUnit_getVersionString() + " test suite runner".
         print "Usage: ".
@@ -43,5 +49,8 @@ function main {
     local reporter is KUnitReporter().
     local runner is KUnitRunner(reporter).
     runner#suite(suiteFile, testNamePattern, testCasePattern).
-    reporter#printReportSummary().
+    local report is reporter#getReport().
+    local reportPrinter is KUnitReportPrinter().
+    reportPrinter#printSummary(report).
+    reportPrinter#printFailuresAndErrors(report).
 }

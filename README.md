@@ -32,6 +32,31 @@ object-oriented programming on KOS.
 [KSP](https://www.kerbalspaceprogram.com/en/).
 In this case you'll never face with problems programming on KOS.
 
+## Get started
+
+To get started just run KUnit unit tests. Let's assume that you placed KUnit to
+Archive volume. Open KOS terminal and run:
+```
+runpath("kunit/suite", "kunit/test").
+```
+
+
+TODO:
+
+## How to run
+
+TODO:
+
+### How to write Unit Tests
+
+To get started have a look on files in kunit/examples. Those classes are
+especially simplified. Some useful (I hope) comments are provided.
+
+
+Also KUnit covered by self-tests. Those tests have lot examples of basics and
+tricks how to test your code. Study it and you could do TDD as pro. All KUnit
+self-tests are located in kunit/test subdirectory of project root. 
+
 
 ## Known issues
 

@@ -4,8 +4,9 @@
 // Not yet done.
 // Still unable to reproduce test case automatically.
 
-// The Case: Calling object member on wrong variable causes KSP crash.
-// Looks like all related to closure scopes, binding or something like that
+// The Case: Looks like that MANY (but not all) errors inside mix of
+// closure+delegate+storing code references to lexicon causes KSP crash.
+// With high prob it depends on stack depth.
 //
 // Example1:
 //
@@ -99,4 +100,16 @@
 //    local actual is KUnit_getVersionString().
 //    if not public#assertEquals(expected, actua) return.
 //                                             ^^ crash
+//
+// Example 10: (calling with wrong signature)
+//
+// When method defined
+// function KUnitTestCaseReport_aggregateEvent {
+//    declare local parameter public, private.
+// }
+//
+// So calling causes crash
+// object["aggregateEvent"](event).
+// because aggregateEvent hasn't declared third argument
+//
 //

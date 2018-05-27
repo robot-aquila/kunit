@@ -19,6 +19,7 @@ function KUnitReporterTest {
     local private is lexicon().
     local parentProtected is protected:copy().
     
+    set private#report to -1.
     set private#printerMock to -1.
     set private#testObject to -1.
     set private#eventBuilder to -1.
@@ -33,8 +34,6 @@ function KUnitReporterTest {
     set public#testNotifyOfTestCaseEnd to KUnitReportertest_testNotifyOfTestCaseEnd@:bind(public, private).
     set public#testNotifyOfTestEnd to KUnitReporterTest_testNotifyOfTestEnd@:bind(public, private).
     set public#testNotifyOfError to KUnitReporterTest_testNotifyOfError@:bind(public, private).
-    set public#testPrintReportSummary_Redline to KUnitReporterTest_testPrintReportSummary_Redline@:bind(public, private).
-    set public#testPrintReportSummary_Greenline to KUnitReporterTest_testPrintReportSummary_Greenline@:bind(public, private).
     
     public#addCasesByNamePattern("^test").
 
@@ -45,8 +44,9 @@ function KUnitReporterTest_setUp {
     declare local parameter private, parentProtected.
     if not parentProtected#setUp() { return false. }
 
+    set private#report to KUnitTestSuiteReport().
     set private#printerMock to KUnitPrinter().
-    set private#testObject to KUnitReporter(private#printerMock).
+    set private#testObject to KUnitReporter(private#report, private#printerMock).
     set private#eventBuilder to KUnitEventBuilder("TestName", "testCase").
     
     return true.
@@ -67,6 +67,9 @@ function KUnitReporterTest_testCtor {
     
     local object is private#testObject.
     if not public#assertEquals("KUnitReporter", object#getClassName()).
+    
+    local report is object#getReport().
+    if not public#assertTrue(report#isClass("KUnitTestSuiteReport")) return.
 }
 
 function KUnitReporterTest_testNotifyOfTestStart {
@@ -81,11 +84,19 @@ function KUnitReporterTest_testNotifyOfTestStart {
         set captured to text.
     }.
     builder#setTestCaseName("").
-    local res is builder#buildSuccess().
+    local res is builder#buildTestStart().
+    
+    local capture2 is -1.
+    local report is private#report.
+    set report#aggregateEvent to {
+        declare local parameter event.
+        set capture2 to event.
+    }.
      
     object#notifyOfTestStart(res).
     
-    if not public#assertEquals("TestName test_start->success", captured) return.
+    if not public#assertEquals("TestName testStart", captured) return.
+    if not public#assertObjectEquals(res, capture2) return.
 }
 
 function KUnitReporterTest_testNotifyOfTestCaseStart {
@@ -99,11 +110,19 @@ function KUnitReporterTest_testNotifyOfTestCaseStart {
         declare local parameter text.
         set captured to text.
     }.
-    local res is builder#buildSuccess().
+    local res is builder#buildTestCaseStart().
+    
+    local capture2 is -1.
+    local report is private#report.
+    set report#aggregateEvent to {
+        declare local parameter event.
+        set capture2 to event.
+    }.
     
     object#notifyOfTestCaseStart(res).
     
-    if not public#assertEquals("TestName#testCase test_case_start->success", captured) return.
+    if not public#assertEquals("TestName#testCase testCaseStart", captured) return.
+    if not public#assertObjectEquals(res, capture2) return.
 }
 
 function KUnitReporterTest_testNotifyOfAssertionResult {
@@ -119,9 +138,17 @@ function KUnitReporterTest_testNotifyOfAssertionResult {
     }.
     local res is builder#buildSuccess().
     
+    local capture2 is -1.
+    local report is private#report.
+    set report#aggregateEvent to {
+        declare local parameter event.
+        set capture2 to event.
+    }.
+    
     object#notifyOfAssertionResult(res).
     
-    if not public#assertEquals("TestName#testCase assertion[0]->success", captured) return.
+    if not public#assertEquals("TestName#testCase success", captured) return.
+    if not public#assertObjectEquals(res, capture2) return.
 }
 
 function KUnitReporterTest_testNotifyOfTestCaseEnd {
@@ -135,11 +162,19 @@ function KUnitReporterTest_testNotifyOfTestCaseEnd {
         declare local parameter text.
         set captured to text.
     }.
-    local res is builder#buildSuccess().
+    local res is builder#buildTestCaseEnd().
+
+    local capture2 is -1.
+    local report is private#report.
+    set report#aggregateEvent to {
+        declare local parameter event.
+        set capture2 to event.
+    }.
 
     object#notifyOfTestCaseEnd(res).
     
-    if not public#assertEquals("TestName#testCase test_case_end->success", captured) return.
+    if not public#assertEquals("TestName#testCase testCaseEnd", captured) return.
+    if not public#assertObjectEquals(res, capture2) return.
 }
 
 function KUnitReporterTest_testNotifyOfTestEnd {
@@ -154,11 +189,19 @@ function KUnitReporterTest_testNotifyOfTestEnd {
         set captured to text.
     }.
     builder#setTestCaseName("").
-    local res is builder#buildSuccess().
+    local res is builder#buildTestEnd().
 
+    local capture2 is -1.
+    local report is private#report.
+    set report#aggregateEvent to {
+        declare local parameter event.
+        set capture2 to event.
+    }.
+    
     object#notifyOfTestEnd(res).
     
-    if not public#assertEquals("TestName test_end->success", captured) return.
+    if not public#assertEquals("TestName testEnd", captured) return.
+    if not public#assertObjectEquals(res, capture2) return.
 }
 
 function KUnitReporterTest_testNotifyOfError {
@@ -174,136 +217,15 @@ function KUnitReporterTest_testNotifyOfError {
     }.
     local res is builder#buildError("Some error text").
     
+    local capture2 is -1.
+    local report is private#report.
+    set report#aggregateEvent to {
+        declare local parameter event.
+        set capture2 to event.
+    }.
+    
     object#notifyOfError(res).
     
-    if not public#assertEquals("TestName#testCase ERROR: Some error text", captured) return.
+    if not public#assertEquals("TestName#testCase error: Some error text", captured) return.
+    if not public#assertObjectEquals(res, capture2) return.
 }
-
-function KUnitReporterTest_testPrintReportSummary_Redline {
-    declare local parameter public, private.
-    
-    // Given
-    
-    // Yep. That is the hard case.
-    // Decision to make refactoring for better design is close around.
-    // Ideally it should be two classes: one to gather the data and
-    // other to represent the result.
-    
-    // We have to reproduce valid sequence of notifications to build correct
-    // summary report. Let's assume it will be: two tests with one test case
-    // each. The first test will finish with result of two successful
-    // assertions.  The second test will finish with one success and one
-    // failure. The third test will finish with an error. So we can predict the
-    // summarty report. It should be:
-    
-    local vers is KUnit_getVersionString().
-    local expected is list().
-    expected:add("== REDLINE ===============================").
-    expected:add("                  total |success | failed ").
-    expected:add("     assertions:      4 |      3 |      1 ").
-    expected:add("     test cases:      2 |      1 |      1 ").
-    expected:add("          tests:      2 |      1 |      1 ").
-    expected:add("         errors:      1                   ").
-    expected:add("========================== " + vers + " ==").
-
-    local builder is private#eventBuilder.
-    local object is private#testObject.
-    local printerMock is private#printerMock.
-    
-    // We're making fixture and do not need the output.
-    // Let's make our printer mock "nice" to hide whole output until it needed
-    set printerMock#print to { declare local parameter text. }.
-    
-    // Next let's add entries for summary report
-    builder#setTestName("FirstTest").
-    object#notifyOfTestStart(builder#buildSuccess()).
-    builder#setTestCaseName("testMyFirstTestCase").
-    object#notifyOfTestCaseStart(builder#buildSuccess()).
-    object#notifyOfAssertionResult(builder#buildSuccess()).
-    object#notifyOfAssertionResult(builder#buildSuccess()).
-    object#notifyOfTestCaseEnd(builder#buildSuccess()).
-    builder#setTestCaseName("").
-    object#notifyOfTestEnd(builder#buildSuccess()).
-    
-    builder#setTestName("SecondTest").
-    object#notifyOfTestStart(builder#buildSuccess()).
-    builder#setTestCaseName("testMySecondTestCase").
-    object#notifyOfTestCaseStart(builder#buildSuccess()).
-    object#notifyOfAssertionResult(builder#buildSuccess()).
-    object#notifyOfAssertionResult(builder#buildFailure("Test failure")).
-    object#notifyOfTestCaseEnd(builder#buildSuccess()).
-    builder#setTestName("").
-    object#notifyOfTestEnd(builder#buildSuccess()).
-    
-    builder#setTestName("ThirdTest").
-    object#notifyOfError(builder#buildError("Third test not started")).
-    
-    // So, the time to build report. Let's capture all output from now.
-    local actual is list().
-    set printerMock#print to {
-        declare local parameter text.
-        actual:add(text).
-    }.
-    
-    // When
-    object#printReportSummary().
-    
-    // Then
-    if not public#assertListEquals(expected, actual, "Expected output does not match") return.
-}
-
-function KUnitReporterTest_testPrintReportSummary_Greenline {
-    declare local parameter public, private.
-
-    // GIVEN
-
-    local vers is KUnit_getVersionString().
-    local expected is list().
-    expected:add("== GREENLINE =============================").
-    expected:add("                  total |success | failed ").
-    expected:add("     assertions:      4 |      4 |      0 ").
-    expected:add("     test cases:      2 |      2 |      0 ").
-    expected:add("          tests:      2 |      2 |      0 ").
-    expected:add("         errors:      0                   ").
-    expected:add("========================== " + vers + " ==").
-
-    local builder is private#eventBuilder.
-    local object is private#testObject.
-    local printerMock is private#printerMock.
-    
-    set printerMock#print to { declare local parameter text. }.
-    
-    builder#setTestName("FirstTest").
-    object#notifyOfTestStart(builder#buildSuccess()).
-    builder#setTestCaseName("testMyFirstTestCase").
-    object#notifyOfTestCaseStart(builder#buildSuccess()).
-    object#notifyOfAssertionResult(builder#buildSuccess()).
-    object#notifyOfAssertionResult(builder#buildSuccess()).
-    object#notifyOfTestCaseEnd(builder#buildSuccess()).
-    builder#setTestCaseName("").
-    object#notifyOfTestEnd(builder#buildSuccess()).
-
-    builder#setTestName("SecondTest").
-    object#notifyOfTestStart(builder#buildSuccess()).
-    builder#setTestCaseName("testMySecondTestCase").
-    object#notifyOfTestCaseStart(builder#buildSuccess()).
-    object#notifyOfAssertionResult(builder#buildSuccess()).
-    object#notifyOfAssertionResult(builder#buildSuccess()).
-    object#notifyOfTestCaseEnd(builder#buildSuccess()).
-    builder#setTestName("").
-    object#notifyOfTestEnd(builder#buildSuccess()).
-
-    local actual is list().
-    set printerMock#print to {
-        declare local parameter text.
-        actual:add(text).
-    }.
-    
-    // WHEN
-    object#printReportSummary().
-    
-    // THEN
-    if not public#assertListEquals(expected, actual, "Expected output does not match") return.
-}
-
-

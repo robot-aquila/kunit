@@ -164,7 +164,7 @@ function KUnitTest_run {
         return.
     }
     
-    local result is eventBuilder#buildSuccess().
+    local result is eventBuilder#buildTestStart().
     reporter#notifyOfTestStart(result).
 
     set private#isRunning to true.    
@@ -179,19 +179,20 @@ function KUnitTest_run {
             private#reportError("Test case setup failed").
             protected#tearDown().
         } else {
-            set result to eventBuilder#buildSuccess().
+            set result to eventBuilder#buildTestCaseStart().
             reporter#notifyOfTestCaseStart(result).
             local testCaseFunction is private#testCases[testCaseName].
             testCaseFunction().
             protected#tearDown().
-            reporter#notifyOfTestCaseEnd(result). // can use the same result
+            set result to eventBuilder#buildTestCaseEnd().
+            reporter#notifyOfTestCaseEnd(result).
         }        
     }
     set private#isRunning to false.
         
     eventBuilder#setTestCaseName("").
     protected#tearDownTest().
-    set result to eventBuilder#buildSuccess().
+    set result to eventBuilder#buildTestEnd().
     reporter#notifyOfTestEnd(result).
     eventBuilder#setTestName("").
 }

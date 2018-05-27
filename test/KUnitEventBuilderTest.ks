@@ -29,6 +29,10 @@ function KUnitEventBuilderTest {
     set public#testBuildSuccess to KUnitEventBuilderTest_testBuildSuccess@:bind(public, private).
     set public#testBuildError to KUnitEventBuilderTest_testBuildError@:bind(public, private).
     set public#testBuildExpectationFailure to KUnitEventBuilderTest_testBuildExpectationFailure@:bind(public, private).
+    set public#testBuildTestStart to KUnitEventBuilderTest_testBuildTestStart@:bind(public, private).
+    set public#testBuildTestEnd to KUnitEventBuilderTest_testBuildTestEnd@:bind(public, private).
+    set public#testBuildTestCaseStart to KUnitEventBuilderTest_testBuildTestCaseStart@:bind(public, private).
+    set public#testBuildTestCaseEnd to KUnitEventBuilderTest_testBuildTestCaseEnd@:bind(public, private).
     
     public#addCasesByNamePattern("^test").
 
@@ -110,6 +114,10 @@ function KUnitEventBuilderTest_testBuildFailure {
     local expected is KUnitEvent("failure", "Message. Clarification", "Zulu24", "myCase").
     local actual is object#buildFailure("Message", "Clarification").
     if not public#assertObjectEquals(expected, actual) return.
+    
+    local expected is KUnitEvent("badaboom", "Message. Clarification", "Zulu24", "myCase").
+    local actual is object#buildFailure("Message", "Clarification", "badaboom").
+    if not public#assertObjectEquals(expected, actual) return.
 }
 
 function KUnitEventBuilderTest_testBuildSuccess {
@@ -150,3 +158,48 @@ function KUnitEventBuilderTest_testBuildExpectationFailure {
     if not public#assertObjectEquals(expected, actual) return.
 }
 
+function KUnitEventBuilderTest_testBuildTestStart {
+    declare local parameter public, private.
+    
+    local object is private#testObject.
+    
+    object#setTestName("FooTest").
+    local expected is KUnitEvent("testStart", "", "FooTest").
+    local actual is object#buildTestStart().
+    if not public#assertObjectEquals(expected, actual) return.
+}
+
+function KUnitEventBuilderTest_testBuildTestEnd {
+    declare local parameter public, private.
+    
+    local object is private#testObject.
+    
+    object#setTestName("ZuluTest").
+    local expected is KUnitEvent("testEnd", "", "ZuluTest").
+    local actual is object#buildTestEnd().
+    if not public#assertObjectEquals(expected, actual) return.
+}
+
+function KUnitEventBuilderTest_testBuildTestCaseStart {
+    declare local parameter public, private.
+    
+    local object is private#testObject.
+    
+    object#setTestName("CharlieTest").
+    object#setTestCaseName("testMyFN").
+    local expected is KUnitEvent("testCaseStart", "", "CharlieTest", "testMyFN").
+    local actual is object#buildTestCaseStart().
+    if not public#assertObjectEquals(expected, actual) return.
+}
+
+function KUnitEventBuilderTest_testBuildTestCaseEnd {
+    declare local parameter public, private.
+    
+    local object is private#testObject.
+    
+    object#setTestName("HelloTest").
+    object#setTestCaseName("testZulu").
+    local expected is KUnitEvent("testCaseEnd", "", "HelloTest", "testZulu").
+    local actual is object#buildTestCaseEnd().
+    if not public#assertObjectEquals(expected, actual) return.
+}

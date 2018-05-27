@@ -17,7 +17,7 @@ function KUnitTestTest {
 	local private is lexicon().
 	local parentProtected is protected:copy().
 	
-	set private#eventBuilder to KUnitEventBuilder().
+	set private#eventBuilder to -1.
 	set private#printerMock to -1.
 	set private#reporterMock to -1.
 	set private#testObject to -1.
@@ -58,8 +58,10 @@ function KUnitTestTest_setUp {
     local printerMock is KUnitPrinter().
     set printerMock#print to { declare local parameter x. }.
     set private#printerMock to printerMock.
-    set private#reporterMock to KUnitReporter(printerMock).
+    local report is KUnitTestSuiteReport().
+    set private#reporterMock to KUnitReporter(report, printerMock).
     set private#testObject to KUnitTest("MyTest", private#reporterMock).
+    set private#eventBuilder to KUnitEventBuilder().
     
     return true.
 }
@@ -338,28 +340,18 @@ function KUnitTestTest_testRun_TestOfNotificationSequence {
     object#run().
     
     // Then
-    local msg is "Number of notifications should be 5".
-    if not public#assertEquals(5, actual:length, msg) return.
-    
-    local expected is KUnitEvent("success", "", "MyTest").
-    local msg is "Unexpected notification of test start".
-    if not public#assertObjectEquals(expected, actual[0], msg) return.
-    
-    local expected is KUnitEvent("success", "", "MyTest", "testCase1").
-    local msg is "Unexpected notification of test case start".
-    if not public#assertObjectEquals(expected, actual[1], msg) return.
-
-    local expected is KUnitEvent("failure", "good message", "MyTest", "testCase1").
-    local msg is "Unexpected notification of assertion result".
-    if not public#assertObjectEquals(expected, actual[2], msg) return.
-    
-    local expected is KUnitEvent("success", "", "MyTest", "testCase1").
-    local msg is "Unexpected notification of test case end".
-    if not public#assertObjectEquals(expected, actual[3], msg) return.
-    
-    local expected is KUnitEvent("success", "", "MyTest").
-    local msg is "Unexpected notification of test end".
-    if not public#assertObjectEquals(expected, actual[4], msg) return.
+    local builder is private#eventBuilder.
+    local expected is list().
+    builder#setTestName("MyTest").
+    expected:add(builder#buildTestStart()).
+    builder#setTestCaseName("testCase1").
+    expected:add(builder#buildTestCaseStart()).
+    expected:add(builder#buildFailure("good message")).
+    expected:add(builder#buildTestCaseEnd()).
+    builder#setTestCaseName("").
+    expected:add(builder#buildTestEnd()).
+    local msg is "Unexpected notification sequence".
+    if not public#assertObjectListEquals(expected, actual, msg) return.
 }
 
 function KUnitTestTest_testFail {

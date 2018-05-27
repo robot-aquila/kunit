@@ -53,10 +53,10 @@ function KUnitEventTest_testCtor {
     local object is private#testObject.
 
     if not public#assertEquals("KUnitEvent", object#getClassName()) return.
-    if not public#assertEquals("failure", object#type) return.
-    if not public#assertEquals("test msg", object#message) return.
-    if not public#assertEquals("FooTest", object#testName) return.
-    if not public#assertEquals("testCase1", object#testCaseName) return.
+    if not public#assertEquals("failure", object#getType()) return.
+    if not public#assertEquals("test msg", object#getMessage()) return.
+    if not public#assertEquals("FooTest", object#getTestName()) return.
+    if not public#assertEquals("testCase1", object#getTestCaseName()) return.
 }
 
 function KUnitEventTest_testToString {
@@ -67,17 +67,17 @@ function KUnitEventTest_testToString {
     local expected is "FooTest#testCase1 failure: test msg".
     if not public#assertEquals(expected, object#toString()) return.
     
-    set object#testCaseName to "".
+    local other is KUnitEvent("failure", "test msg", "FooTest").
     local expected is "FooTest failure: test msg".
-    if not public#assertEquals(expected, object#toString()) return.
+    if not public#assertEquals(expected, other#toString()) return.
     
-    set object#testName to "".
+    local other is KUnitEvent("failure", "test msg", "", "testCase1").
     local expected is "failure: test msg".
-    if not public#assertEquals(expected, object#toString()) return.
+    if not public#assertEquals(expected, other#toString()) return.
     
-    set object#message to "".
-    local expected is "failure".
-    if not public#assertEquals(expected, object#toString()) return.
+    local other is KUnitEvent("failure", "", "FooTest", "testCase1").
+    local expected is "FooTest#testCase1 failure".
+    if not public#assertEquals(expected, other#toString()) return.
 }
 
 function KUnitEventTest_testEquals {
@@ -92,22 +92,19 @@ function KUnitEventTest_testEquals {
     local msg is "Objects must be equal if all attributes are equal".
     if not public#assertTrue(object#equals(other), msg) return.
     
-    set other#type to "success".
+    local other is KUnitEvent("success", "test msg", "FooTest", "testCase1").
     local msg is "Objects must be not equal if types are not equal".
     if not public#assertFalse(object#equals(other), msg) return.
     
-    set other#type to object#type.
-    set other#message to "another message".
+    local other is KUnitEvent("failure", "another message", "FooTest", "testCase1").
     local msg is "Objects must be not equal if messages are not equal".
     if not public#assertFalse(object#equals(other), msg) return.
     
-    set other#message to object#message.
-    set other#testName to "SomeTest".
+    local other is KUnitEvent("failure", "test msg", "SomeTest", "testCase1").
     local msg is "Objects must be not equal if test names are not equal".
     if not public#assertFalse(object#equals(other), msg) return.
     
-    set other#testName to object#testName.
-    set other#testCaseName to "myTestCase".
+    local other is KUnitEvent("failure", "test msg", "FooTest", "myTestCase").
     local msg is "Objects must be not equal if test case names are not equal".
     if not public#assertFalse(object#equals(other), msg) return.
 }

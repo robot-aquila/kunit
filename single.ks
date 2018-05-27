@@ -7,11 +7,16 @@ runoncepath("kunit/class/KUnit").
 runoncepath("kunit/class/KUnitFile").
 runoncepath("kunit/class/KUnitReporter").
 runoncepath("kunit/class/KUnitRunner").
+runoncepath("kunit/class/KUnitReportPrinter").
 
 main().
 function main {
     local testFile is KUnitFile(path(testPath)).
-    if not testFile#isFile() {
+    if not testPath or not testFile#isFile() {
+        if testPath and not testFile#isFile() {
+            print "ERROR: Test file you entered is not exists: " + testPath.
+            print "ERROR: Check the path and try again".
+        }
         local spath is "kunit/single".
         print "Welcome to " + KUnit_getVersionString() + " single test runner".
         print "Usage: ".
@@ -40,5 +45,8 @@ function main {
     local reporter is KUnitReporter().
     local runner is KUnitRunner(reporter).
     runner#single(testFile, testCasePattern).
-    reporter#printReportSummary().
+    local report is reporter#getReport().
+    local reportPrinter is KUnitReportPrinter().
+    reportPrinter#printSummary(report).
+    reportPrinter#printFailuresAndErrors(report).
 }
