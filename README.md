@@ -88,7 +88,7 @@ Have you noticed there is REDLINE? REDLINE means there are problems with the pas
 
 <b>Note: REDLINE or GREENLINE is the most significant report you should track while doing TDD.</b>
 
-Do not worry that there is a REDLINE here. Those test especially written to demonstrate how KUnit will handle failures and errors. Let's get deeper what we see in case of failures. I will cut the output to make it a bit  nicer. Consider that output is eqivalent to the last one
+Do not worry that there is a REDLINE here. Those tests especially written to demonstrate how KUnit will handle failures and errors. Let's get deeper what we see in case of failures. I will cut the output to make it a bit  nicer. Consider that output is eqivalent to the last one
 
 ```
 MyTestName#testmycase1 testCaseEnd
@@ -117,6 +117,15 @@ MyTestName#testmycase1 assertion[0]failure: V...
 ERRORS:                                          <-- here and below is test error report
 ErrorsDemoTest#testerrorsarentfailures error:...
 ```
+Let's figure out why we need each section. Each section is quite important as the order they are followed by
+
+* Test execution log may look redundant but this section is important because it show realtime execution log. It prints information at time when it was obtained from the test. There is difference with other sections which is formed AFTER all tests. In case if you got critical failure and you test run is broken you will see WHERE the problem appeared. What test what test case and possinble what assertion. Taking that information into account you can easily locate the code where exactly to work to beat issue. That is definitely useful.
+
+* Summary Report is the overview of test run situation. It isn't located at bottom because when you got failures you prefer to know more details instead of summary. This report may be formed after all wanted tests run. Therefore you will not see this and all following sections if you get something what may called "language error". Don't worry, this is normal in TDD. The main goal is to keep your code out of errors in production. By the way, when you got GREENLINE looking at the summary report you can proud of work you done. That's quite nice.
+
+* Assertion failures report are list of all registered failures. Test execution log may contains so many lines to make investigation process quite hard. Actually we do not need anything else instead of information about failures and errors. Therefore there is assertion failures report. Keep in mind that all assertions inside a single test case have its own index. Index means in what order this statement follows in the body of the test case. KOS does not provide any information about what line of code caused a problem. Therefore KUnit suggests assertion indexation to make issue localisation easier. So you can find appropriate assertion even if it does not provided detailed message. Assertion failures report is the section that you will use most time doing TDD. 
+
+* And the last one - is Error report section. Errors are not assertion failures. Failures are related to code under test. But errors are related to test code itself. Most time you will not see this section. But sometime your test may include more interaction with test environment. And in case if thee is problems with test environment there will be a test error.For example you test creating files but reached volume size limit. This will cause problems but your code under test is actually fine. There will be a test error, not your code failure. To separate such situations from test cases, there are errors.
 
 TODO:
 
